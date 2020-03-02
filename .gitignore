@@ -1,7 +1,8 @@
 # project specific ignore
-/.idea
-/venv
+.idea
+.vscode
 *.slurm
+test.py
 
 
 #======================= auto ignore ======================

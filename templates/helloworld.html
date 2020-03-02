@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World</title>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+    Flask&Jquery Test!
+    <br>
+    <br>
+    <button id="loadlink">Async Load</button>
+    <p id="loadcontent"></p>
+</body>
+<script type="text/javascript">
+    $('#loadlink').on("click", function(event){
+        $.getJSON("jsonrequest", function(data){
+            var word = data["result"]
+            $('#loadcontent').append(word+"<br>")
+        })
+    })
+</script>
+</html>
