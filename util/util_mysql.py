@@ -1,5 +1,211 @@
-import pymysql
+import datetime
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
+from sqlalchemy.dialects.mysql import LONGTEXT
+from sqlalchemy import exc
+from sqlalchemy import and_, or_
 # from util.util_logging import UtilLogging as ULog
+
+Base = declarative_base()
+# engine = None
+# Session = None
+# session = None
+
+
+class Users(Base):
+    """
+    用户个人信息表
+    """
+
+    __tablename__ = 'user'
+    uid = Column(String(20), primary_key=True)
+    name = Column(String(50), nullable=False)
+    passwd = Column(String(50), nullable=False)
+    email = Column(String(50), unique=True)
+    labelset = Column(String(300))
+    regtime = Column(DateTime, default=datetime.datetime.now)  # 不能加括号，加了括号，以后永远是当前时间
+
+    def __str__(self):
+        return self.uid + " -- " + self.name + ":" + self.passwd + " -- " + str(self.regtime)
+
+
+class Questions(Base):
+    """
+    问题数据表
+    """
+
+    __tablename__ = "question"
+    qid = Column(String(20), primary_key=True)
+    uid = Column(String(20), ForeignKey('user.uid'), nullable=False)
+    label = Column(String(30))
+    ques_content = Column(Text)
+    ques_time = Column(DateTime, default=datetime.datetime.now)
+    ques_collect = Column(Integer, default=0)
+
+
+class Answers(Base):
+    """
+    回答数据表
+    """
+
+    __tablename__ = "answer"
+    aid = Column(String(20), primary_key=True)
+    uid = Column(String(20), ForeignKey('user.uid'), nullable=False)
+    qid = Column(String(20), ForeignKey('question.qid'), nullable=False)
+    ans_content = Column(LONGTEXT)
+    ans_time = Column(DateTime, default=datetime.datetime.now)
+    ans_collect = Column(Integer, default=0)
+
+
+class QuesCollections(Base):
+    """
+    问题收藏信息表
+    """
+
+    __tablename__ = "ques_collection"
+    cid = Column(String(20), primary_key=True)
+    uid = Column(String(20), ForeignKey('user.uid'), nullable=False)
+    qid = Column(String(20), ForeignKey('question.qid'), nullable=False)
+
+
+class AnsCollections(Base):
+    """
+    回答收藏信息表
+    """
+
+    __tablename__ = "ans_collection"
+    cid = Column(String(20), primary_key=True)
+    uid = Column(String(20), ForeignKey('user.uid'), nullable=False)
+    aid = Column(String(20), ForeignKey('answer.aid'), nullable=False)
+
+
+def get_conn_url(args):
+    """
+    获取参数，完成数据库连接的地址
+    """
+
+    host = args["host"]
+    port = args["port"]
+    user = args["user"]
+    passwd = args["passwd"]
+    database = args["database"]
+    url = "mysql+pymysql://" + user + ":" + passwd + "@" + host + ":" + str(port) + "/" + database + "?charset=utf8mb4"
+    # print(url)
+    return url
+
+
+class UtilMysql:
+
+    def __init__(self, args, logger):
+        """
+        完成对数据库的连接
+        """
+
+        self.logger = logger
+        self.engine = create_engine(
+            get_conn_url(args),
+            max_overflow=0,  # 超过连接池大小外最多创建的连接
+            pool_size=10,  # 连接池大小
+            pool_timeout=30,  # 池中没有线程最多等待的时间，否则报错
+            pool_recycle=-1  # 多久之后对线程池中的线程进行一次连接的回收（重置）
+        )
+        # Base.metadata.create_all(self.engine)  # 建表
+        self.Session = sessionmaker(bind=self.engine)
+        self.session = self.Session()
+
+    def __del__(self):
+        """
+        断开连接
+        """
+
+        self.session.close()
+        # Base.metadata.drop_all(self.engine)  # 删除表
+
+    def insert(self, obj):
+        """
+        插入单条记录
+        :param obj: 数据库记录对象
+        :return:
+        """
+
+        try:
+            self.session.add(obj)
+            self.session.commit()
+        except exc:
+            self.logger.error("Wrong Insert Instruction")
+
+    def insert_all(self, objs):
+        """
+        插入多条记录
+        :param objs: 列表，中间的每个元素是一个要插入的记录对象
+        :return:
+        """
+
+        try:
+            self.session.add_all(objs)
+            self.session.commit()
+        except exc:
+            self.logger.error("Wrong Insert Instruction")
+
+    def delete(self, table, func=None):
+        """
+        删除指定条件的记录
+        :param table: 数据所在表，输入对应的类名
+        :param func: 筛选条件，输入表达式
+            and_(x1,x2)表示同时满足，or_(y1,y2)表示任一条件满足, z.in_([])表示存在于列表中，~表示取反
+        :return:
+        """
+
+        try:
+            if func is not None:
+                self.session.query(table).filter(func).delete()
+            else:
+                self.session.query(table).delete()
+            self.session.commit()
+        except exc:
+            self.logger.error("Wrong Delete Instruction")
+
+    def update(self, table, data, func=None):
+        """
+        修改指定条件的记录
+        :param table: 数据所在表，输入对应的类名
+        :param data: 需要修改的值，输入字典
+        :param func: 筛选条件，输入表达式
+        :return:
+        """
+
+        try:
+            if func is not None:
+                self.session.query(table).filter(func).update(data)
+            else:
+                self.session.query(table).update(data)
+            self.session.commit()
+        except exc:
+            self.logger.error("Wrong Update Instruction")
+
+    def select(self, table, func=None):
+        """
+        查询指定条件的记录
+        :param table: 数据所在表，输入对应的类名
+        :param func: 筛选条件，输入表达式
+        :return:
+        """
+
+        result = []
+        try:
+            if func is not None:
+                result = self.session.query(table).filter(func).all()
+            else:
+                result = self.session.query(table).all()
+        except exc:
+            self.logger.error("Wrong Update Instruction")
+        return result
+
+
+'''
+import pymysql
 
 
 class UtilMysql:
@@ -44,9 +250,9 @@ class UtilMysql:
         if data is not None:
             for d in data:
                 try:
-                    self.cursor.execute("INSERT INTO %s VALUES (%s)" % d)
+                    self.cursor.execute("INSERT INTO %s VALUES (%s);" % d)
                     self.connect.commit()
-                except pymysql.err:
+                except pymysql.err.ProgrammingError:
                     self.connect.rollback()  # Rollback in case there is any error
                     self.logger.error("Wrong Insert Instruction")
         if sqls is not None:
@@ -70,10 +276,10 @@ class UtilMysql:
         if data is not None:
             for d in data:
                 try:
-                    self.cursor.execute("DELETE FROM %s WHERE %s = '%s'" % d)
+                    self.cursor.execute("DELETE FROM %s WHERE %s = '%s';" % d)
                     self.connect.commit()
-                except pymysql.err:
-                    self. connect.rollback()  # Rollback in case there is any error
+                except pymysql.err.ProgrammingError:
+                    self.connect.rollback()  # Rollback in case there is any error
                     self.logger.error("Wrong Delete Instruction")
         if sqls is not None:
             for sql in sqls:
@@ -96,9 +302,9 @@ class UtilMysql:
         if data is not None:
             for d in data:
                 try:
-                    self.cursor.execute("UPDATE %s SET %s = '%s' WHERE %s = '%s'" % d)
+                    self.cursor.execute("UPDATE %s SET %s = '%s' WHERE %s = '%s';" % d)
                     self.connect.commit()
-                except pymysql.err:
+                except pymysql.err.ProgrammingError:
                     self.connect.rollback()  # Rollback in case there is any error
                     self.logger.error("Wrong Update Instruction")
         if sqls is not None:
@@ -122,9 +328,9 @@ class UtilMysql:
         result = []
         if d is not None:
             try:
-                self.cursor.execute("SELECT * FROM %s WHERE %s = '%s'" % d)
+                self.cursor.execute("SELECT * FROM %s WHERE %s = '%s';" % d)
                 result = self.cursor.fetchall()
-            except pymysql.err:
+            except pymysql.err.ProgrammingError:
                 self.connect.rollback()  # Rollback in case there is any error
                 self.logger.error("Wrong Select Instruction")
         if sql is not None:
@@ -135,3 +341,4 @@ class UtilMysql:
                 self.connect.rollback()  # Rollback in case there is any error
                 self.logger.error("Wrong Select Instruction")
         return result
+'''
