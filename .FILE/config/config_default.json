@@ -1,0 +1,32 @@
+{
+  "global": {
+
+  },
+  "mysql": {
+    "host": {
+      "type": "string",
+      "default": "47.93.56.66",
+      "description": ""
+    },
+    "port": {
+      "type": "int",
+      "default": 3306,
+      "description": ""
+    },
+    "user": {
+      "type": "string",
+      "default": "guest",
+      "description": ""
+    },
+    "passwd": {
+      "type": "string",
+      "default": "Guestpass1!",
+      "description": ""
+    },
+    "database": {
+      "type": "string",
+      "default": "CAU_Project",
+      "description": ""
+    }
+  }
+}
