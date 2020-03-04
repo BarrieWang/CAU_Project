@@ -4,8 +4,7 @@ import csv
 import pickle
 
 root = os.path.abspath("")
-folder = {"data": "/dataset", "example": "/examples", "datap": "/dataset_processed", "result": "/results",
-          "model": "/models", "log": "/logging", "config": "/config", "vocab": "/vocab"}
+folder = {"log": "/logging", "config": "/config"}
 suffix = {"json": ".json", "csv": ".csv", "tsv": ".tsv", "txt": ".txt", "pickle": "", "": ""}
 # root: 根目录
 # folder: 文件类型对应保存文件名
@@ -20,7 +19,7 @@ def get_fullurl(file_type, file_name, file_format="json"):
     :param file_format: 文件格式（默认json）
     """
 
-    url = root + "/File_Directory"
+    url = root + "/.FILE"
     try:
         url += folder[file_type]
     except Exception:

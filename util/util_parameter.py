@@ -4,12 +4,7 @@ from util.util_filepath import *
 
 class UtilParameter:
 
-    GLOBAL = "global"
-    DATASET = "dataset"
-    MODEL_BUILD = "build"
-    TRAIN = "train"
-    PREDICT = "predict"
-    part = [GLOBAL, DATASET, MODEL_BUILD, TRAIN, PREDICT]
+    part = ["global", "mysql"]
     # part: 模块划分
 
     def __init__(self, file_name="config_default", file_format="json", file_type="config"):
@@ -74,34 +69,6 @@ class UtilParameter:
                         ) from Exception
                         # 出现配置文件参数赋值格式错误，返回错误信息
 
-    def get_value(self, type, value):
-        """
-        根据变量类型将字符串整理为合适的变量值
-        """
-
-        if type == "string":
-            return value
-        elif type == "int":
-            try:
-                return int(value)
-            except ValueError:
-                return None
-        elif type == "float":
-            try:
-                return float(value)
-            except ValueError:
-                return None
-        elif type == "bool":
-            value = value.lower()
-            if value == "true":
-                return True
-            elif value == "false":
-                return False
-            else:
-                return None
-        else:
-            raise Exception("Unknown variable type in definition")
-
     def set_config(self, argv):
         """
         录入从命令行获取的参数值，只处理长格式
@@ -130,10 +97,10 @@ class UtilParameter:
                 for part_name in UtilParameter.part:
                     if option in self.config_menu[part_name].keys():
                         num += 1
-                        val = self.get_value(self.config_menu[part_name][option]["type"], value)
+                        val = get_value(self.config_menu[part_name][option]["type"], value)
                         if val is None:
                             raise KeyError(
-                                "Wrong assignment for '{}.{}'".format(str(part_name), str(k))
+                                "Wrong assignment for '{}.{}'".format(str(part_name), str(option))
                             ) from Exception
                             # 出现错误的变量类型，返回错误信息
                         else:
@@ -148,10 +115,10 @@ class UtilParameter:
                 part_name = opt[0]
                 option = opt[1]
                 try:
-                    val = self.get_value(self.config_menu[part_name][option]["type"], value)
+                    val = get_value(self.config_menu[part_name][option]["type"], value)
                     if val is None:
                         raise KeyError(
-                            "Wrong assignment for '{}.{}'".format(str(part_name), str(k))
+                            "Wrong assignment for '{}.{}'".format(str(part_name), str(option))
                         ) from Exception
                         # 出现错误的变量类型，返回错误信息
                     else:
@@ -175,3 +142,32 @@ class UtilParameter:
         except Exception:
             raise KeyError("Unknown part-name '{}'".format(str(part_name))) from Exception
             # 出现未知模块名，返回错误信息
+
+
+def get_value(type_, value):
+    """
+    根据变量类型将字符串整理为合适的变量值
+    """
+
+    if type_ == "string":
+        return value
+    elif type_ == "int":
+        try:
+            return int(value)
+        except ValueError:
+            return None
+    elif type_ == "float":
+        try:
+            return float(value)
+        except ValueError:
+            return None
+    elif type_ == "bool":
+        value = value.lower()
+        if value == "true":
+            return True
+        elif value == "false":
+            return False
+        else:
+            return None
+    else:
+        raise Exception("Unknown variable type in definition")
