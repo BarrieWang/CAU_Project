@@ -42,7 +42,7 @@ class UserCounts(Base):
     list = ["0" for _ in labels]
     total_count = Column(String(100), default=",".join(list))  # 整体创作量，对应每个label，用逗号隔开
     recent_count = Column(String(100), default=",".join(list))  # 近期创作量，对应每个label，用逗号隔开
-    recent_qid = Column(LONGTEXT)
+    recent_qid = Column(LONGTEXT)  # 近期创作的问题，若干个用逗号连接的qid字符串
 
 
 class Questions(Base):
