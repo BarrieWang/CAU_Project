@@ -133,7 +133,7 @@ class UtilMysql:
         try:
             self.session.add(obj)
             self.session.commit()
-        except exc:
+        except exc.SQLAlchemyError:
             self.logger.error("Wrong Insert Instruction")
 
     def insert_all(self, objs):
@@ -146,7 +146,7 @@ class UtilMysql:
         try:
             self.session.add_all(objs)
             self.session.commit()
-        except exc:
+        except exc.SQLAlchemyError:
             self.logger.error("Wrong Insert Instruction")
 
     def delete(self, table, func=None):
@@ -164,7 +164,7 @@ class UtilMysql:
             else:
                 self.session.query(table).delete()
             self.session.commit()
-        except exc:
+        except exc.SQLAlchemyError:
             self.logger.error("Wrong Delete Instruction")
 
     def update(self, table, data, func=None):
@@ -182,7 +182,7 @@ class UtilMysql:
             else:
                 self.session.query(table).update(data)
             self.session.commit()
-        except exc:
+        except exc.SQLAlchemyError:
             self.logger.error("Wrong Update Instruction")
 
     def select(self, table, func=None):
@@ -199,7 +199,7 @@ class UtilMysql:
                 result = self.session.query(table).filter(func).all()
             else:
                 result = self.session.query(table).all()
-        except exc:
+        except exc.SQLAlchemyError:
             self.logger.error("Wrong Update Instruction")
         return result
 
