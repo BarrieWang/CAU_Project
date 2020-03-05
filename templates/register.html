@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <title>Login</title>
+</head>
+<body>
+    <div align="center">
+        <h1>User Register</h1>
+        <fieldset>
+            <form method="post" action="UserRegister">
+                <input type="text" placeholder="用户名" name="username"/>
+                <br/><a id="usernametext"></a><br/>
+                <input type="password" placeholder="密码" name="password"/>
+                <br/><br/>
+                <input type="password" placeholder="重复密码" name="repeat"/>
+                <br/><a id="repeatpasswdtext"></a><br/>
+                <input type="text" placeholder="邮箱" name="email"/>
+                <br/><a id="emailtext"></a><br/>
+                <input type="submit" name="submit" value="Submit" />
+            </form>
+        </fieldset>
+    </div>
+
+</body>
+
+<script type="text/javascript">
+    console.log('{{result}}')
+    /*if('{{result}}'==None)
+        var result = 4*/
+    //else{
+        var result = '{{ result|tojson }}';
+
+         if(result==0)
+             document.getElementById("usernametext").innerHTML="用户名已被注册"
+        else if(result==1)
+            document.getElementById("repeatpasswdtext").innerHTML="密码不一致"
+        else if(result==2)
+            document.getElementById("emailtext").innerHTML="邮箱格式错误"
+        else if(result==3)
+            document.getElementById("emailtext").innerHTML="该邮箱已被注册"
+
+
+</script>
+
+</html>

@@ -12,6 +12,7 @@ Base = declarative_base()
 # engine = None
 # Session = None
 # session = None
+labels = ["1", "2", "3", "4", "5"]
 
 
 class Users(Base):
@@ -24,11 +25,24 @@ class Users(Base):
     name = Column(String(50), nullable=False)
     passwd = Column(String(50), nullable=False)
     email = Column(String(50), unique=True)
-    labelset = Column(String(300))
+    labelset = Column(String(300))  # 若干个用逗号连接的label字符串
     regtime = Column(DateTime, default=datetime.datetime.now)  # 不能加括号，加了括号，以后永远是当前时间
 
     def __str__(self):
         return self.uid + " -- " + self.name + ":" + self.passwd + " -- " + str(self.regtime)
+
+
+class UserCounts(Base):
+    """
+    用户创作信息统计表
+    """
+
+    __tablename__ = "user_count"
+    uid = Column(String(20), primary_key=True)
+    list = ["0" for _ in labels]
+    total_count = Column(String(100), default=",".join(list))  # 整体创作量，对应每个label，用逗号隔开
+    recent_count = Column(String(100), default=",".join(list))  # 近期创作量，对应每个label，用逗号隔开
+    recent_qid = Column(LONGTEXT)  # 近期创作的问题，若干个用逗号连接的qid字符串
 
 
 class Questions(Base):
@@ -91,7 +105,7 @@ def get_conn_url(args):
     user = args["user"]
     passwd = args["passwd"]
     database = args["database"]
-    url = "mysql+pymysql://" + user + ":" + passwd + "@" + host + ":" + str(port) + "/" + database + "?charset=utf8mb4"
+    url = "mysql+pymysql://{}:{}@{}:{}/{}?charset=utf8mb4".format(user, passwd, host, str(port), database)
     # print(url)
     return url
 
@@ -133,7 +147,7 @@ class UtilMysql:
         try:
             self.session.add(obj)
             self.session.commit()
-        except exc:
+        except exc.SQLAlchemyError:
             self.logger.error("Wrong Insert Instruction")
 
     def insert_all(self, objs):
@@ -146,7 +160,7 @@ class UtilMysql:
         try:
             self.session.add_all(objs)
             self.session.commit()
-        except exc:
+        except exc.SQLAlchemyError:
             self.logger.error("Wrong Insert Instruction")
 
     def delete(self, table, func=None):
@@ -164,7 +178,7 @@ class UtilMysql:
             else:
                 self.session.query(table).delete()
             self.session.commit()
-        except exc:
+        except exc.SQLAlchemyError:
             self.logger.error("Wrong Delete Instruction")
 
     def update(self, table, data, func=None):
@@ -182,7 +196,7 @@ class UtilMysql:
             else:
                 self.session.query(table).update(data)
             self.session.commit()
-        except exc:
+        except exc.SQLAlchemyError:
             self.logger.error("Wrong Update Instruction")
 
     def select(self, table, func=None):
@@ -199,7 +213,7 @@ class UtilMysql:
                 result = self.session.query(table).filter(func).all()
             else:
                 result = self.session.query(table).all()
-        except exc:
+        except exc.SQLAlchemyError:
             self.logger.error("Wrong Update Instruction")
         return result
 
