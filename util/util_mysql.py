@@ -54,6 +54,7 @@ class Questions(Base):
     qid = Column(String(20), primary_key=True)
     uid = Column(String(20), ForeignKey('user.uid'), nullable=False)
     label = Column(String(30))
+    ques_title = Column(String(50))
     ques_content = Column(Text)
     ques_time = Column(DateTime, default=datetime.datetime.now)
     ques_collect = Column(Integer, default=0)

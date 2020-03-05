@@ -3,7 +3,7 @@ from util.util_mysql import UserCounts, Questions, labels
 # from util.util_mysql import UtilMysql as UMysql
 
 
-def recommend(args, user, mysql):
+def recom_qid(args, user, mysql):
     """
     根据当前用户状态提供合适的问题
     :param args: 包括需要的问题推荐数等参数
@@ -64,4 +64,4 @@ def recommend(args, user, mysql):
             score[q.qid] += s[i][q.qid] * weight[i]
     result = sorted(score.items(), key=lambda kv: kv[1], reverse=True)
     # print(result)
-    return result[:recom_num]
+    return [id_ for id_, _ in result[:recom_num]]
