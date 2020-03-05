@@ -12,6 +12,7 @@ Base = declarative_base()
 # engine = None
 # Session = None
 # session = None
+labels = ["1", "2", "3", "4", "5"]
 
 
 class Users(Base):
@@ -24,11 +25,24 @@ class Users(Base):
     name = Column(String(50), nullable=False)
     passwd = Column(String(50), nullable=False)
     email = Column(String(50), unique=True)
-    labelset = Column(String(300))
+    labelset = Column(String(300))  # 若干个用逗号连接的label字符串
     regtime = Column(DateTime, default=datetime.datetime.now)  # 不能加括号，加了括号，以后永远是当前时间
 
     def __str__(self):
         return self.uid + " -- " + self.name + ":" + self.passwd + " -- " + str(self.regtime)
+
+
+class UserCounts(Base):
+    """
+    用户创作信息统计表
+    """
+
+    __tablename__ = "user_count"
+    uid = Column(String(20), primary_key=True)
+    list = ["0" for _ in labels]
+    total_count = Column(String(100), default=",".join(list))  # 整体创作量，对应每个label，用逗号隔开
+    recent_count = Column(String(100), default=",".join(list))  # 近期创作量，对应每个label，用逗号隔开
+    recent_qid = Column(LONGTEXT)
 
 
 class Questions(Base):

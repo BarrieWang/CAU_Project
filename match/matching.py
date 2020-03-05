@@ -24,13 +24,13 @@ def suitability(str1, str2):
     return 1 - dis[len1][len2]/max(len1, len2)
 
 
-def find_qid(args, mysql, target):
+def find_qid(args, target, mysql):
     """
     对指定字符串进行查找与匹配
     :param args: 包括最大筛选数量、筛选阈值等参数
-    :param mysql: 数据库连接器对象
     :param target: 目标字符串
-    :return: 查找结果，list of uid
+    :param mysql: 数据库连接器对象
+    :return: 查找结果，list of qid
     """
 
     temp = mysql.select(Questions)

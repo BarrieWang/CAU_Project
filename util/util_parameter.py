@@ -4,7 +4,7 @@ from util.util_filepath import *
 
 class UtilParameter:
 
-    part = ["global", "mysql", "match"]
+    part = ["global", "mysql", "match", "recommend"]
     # part: 模块划分
 
     def __init__(self, file_name="config_default", file_format="json", file_type="config"):
