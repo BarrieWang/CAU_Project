@@ -28,5 +28,17 @@
       "default": "CAU_Project",
       "description": ""
     }
+  },
+  "match": {
+    "max_num": {
+      "type": "int",
+      "default": null,
+      "description": ""
+    },
+    "threshold": {
+      "type": "float",
+      "default": 0,
+      "description": ""
+    }
   }
 }

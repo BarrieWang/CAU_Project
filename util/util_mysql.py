@@ -91,7 +91,7 @@ def get_conn_url(args):
     user = args["user"]
     passwd = args["passwd"]
     database = args["database"]
-    url = "mysql+pymysql://" + user + ":" + passwd + "@" + host + ":" + str(port) + "/" + database + "?charset=utf8mb4"
+    url = "mysql+pymysql://{}:{}@{}:{}/{}?charset=utf8mb4".format(user, passwd, host, str(port), database)
     # print(url)
     return url
 
