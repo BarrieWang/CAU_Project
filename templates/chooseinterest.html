@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div align="center">
+        <h1 >User Management</h1>
+        <h5>{{ get_flashed_messages()[0] }}</h5>
+        <fieldset >
+            <form  method="post" action="UserInterest">
+                <a>兴趣点1</a><input type="checkbox"  name="1"/><br/>
+                <a>兴趣点2</a><input type="checkbox"  name="2"/><br/>
+                <a>兴趣点3</a><input type="checkbox"  name="3" /><br/>
+                <a>兴趣点4</a><input type="checkbox"  name="4"/><br/>
+                <a>兴趣点5</a><input type="checkbox"  name="5"/><br/>
+                <input type="submit",name="submit",value="确认"/>
+            </form>
+
+        </fieldset>
+    </div>
+</body>
+</html>

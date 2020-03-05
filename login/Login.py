@@ -1,65 +1,73 @@
 from util.util_mysql import *
-from util.util_logging import *
-from util.util_parameter import *
 import re
-def CheckUser(username,password):
+
+
+def checkuser(username, password, db):
     """
     :param username: 用户名
     :param password: 密码
-    :return: 0：无用户名 1：密码不正确 result：登陆成功
+    :param db: 数据库连接对象
+    :return: 0：无用户名 1：密码不正确 用户数据库对象：登陆成功
     """
-    parameter=UtilParameter()
-    logger=UtilLogging(parameter, False, False, False)
 
-    db=UtilMysql(parameter.get_config("mysql"),logger)
-    #print(type(Users.name==username))
-    ret=db.select(Users,Users.name==username)
-    #ret=db.select_mysql(sql="select * from user where name = '"+username+"'")
+    # print(type(Users.name==username))
+    ret = db.select(Users, Users.name == username)
+    # ret=db.select_mysql(sql="select * from user where name = '"+username+"'")
 
-    #print(ret[0].passwd)
-    #print(password)
-    if(ret ==[]):
+    # print(ret[0].passwd)
+    # print(password)
+    if ret is False:
         return 0
-    elif(ret[0].passwd!=password):
+    elif ret[0].passwd != password:
         return 1
     else:
-        return ret
+        return ret[0]
 
-def CheckRegister(username,password,repeatpasswd,useremail):
+
+def checkregister(username, password, repeatpasswd, useremail, db):
     """
-
     :param username: 用户名
     :param password: 密码
     :param repeatpasswd: 重复密码
     :param useremail: 邮箱
-    :return: 0：密码不一致 1：邮箱格式有误，2：邮箱已被注册，3：注册成功
+    :param db: 数据库连接对象
+    :return: 0：用户名已被注册 1：密码不一致 2：邮箱格式有误 3：邮箱已被注册 用户id：注册成功
     """
-    parameter = UtilParameter()
-    logger = UtilLogging(parameter, False, False, False)
-    db = UtilMysql(parameter.get_config("mysql"), logger)
-    CurrentTable = db.select(Users)
-    emaillist=[]
-    namelist=[]
-    for item in CurrentTable:
+    currenttable = db.select(Users)
+    emaillist = []
+    namelist = []
+    for item in currenttable:
         emaillist.append(item.email)
         namelist.append(item.name)
-    #print(emaillist)
-    if(username in namelist):
+    # print(emaillist)
+    if username in namelist:
         return 0
-    if(password!=repeatpasswd):
+    if password != repeatpasswd:
         return 1
-    elif(re.match(r'^[0-9a-zA-Z_]{0,19}@[0-9a-zA-Z]{1,13}\.[com,cn,net]{1,3}$',useremail) is None):
+    elif re.match(r'^[0-9a-zA-Z_]{0,19}@[0-9a-zA-Z]{1,13}\.[com,cn,net]{1,3}$', useremail) is None:
         return 2
-    elif(useremail in emaillist):
+    elif useremail in emaillist:
         return 3
     else:
 
-        idlist=[]
+        idlist = []
 
-        for item in CurrentTable:
+        for item in currenttable:
             idlist.append(int(item.uid))
-        print(idlist)
-        userobj=Users(uid=str(max(idlist)+1),name=username,passwd=password,email=useremail)
+        # print(idlist)
+        userid = str(max(idlist)+1)
+        userobj = Users(uid=userid, name=username, passwd=password, email=useremail)
         db.insert(userobj)
 
-        return 4
+        return userid
+
+
+def storeinterest(interest, userid, db):
+    """
+    :param interest: 用户兴趣点编号，逗号隔开
+    :param userid: 用户id
+    :param db: 数据库连接对象
+    :return: 1:存储完成
+    """
+    db.update(Users, {'labelset': interest}, Users.uid == userid)
+    return 1
