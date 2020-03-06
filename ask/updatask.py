@@ -31,3 +31,5 @@ def updat(uqid, ulabel, ucontent):
     res.ques_content = ucontent
     session.commit()
     session.close()
+
+db.dispose()

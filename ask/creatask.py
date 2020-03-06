@@ -15,3 +15,5 @@ def add(uuid,ulabel,uques_content):
     session.add(question)
     session.commit()
     session.close()
+
+db.dispose()
