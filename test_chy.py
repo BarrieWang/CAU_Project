@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 import json
-from ask import creatask_chy,showask_chy,updatask_chy
+from ask import creatask,showask,updatask
 app = Flask(__name__)
 
 
@@ -42,7 +42,7 @@ def is_created():
     uqcontent = request.args.get("qcontent")
     uqlabel = request.args.get("qlabel")
     print(uqcontent,uqlabel)
-    creatask_chy.add(uuid, uqlabel, uqcontent)
+    creatask.add(uuid, uqlabel, uqcontent)
     return render_template("created.html")
 
 @app.route('/updatask')
@@ -52,7 +52,7 @@ def to_updat_ask():
     :return: updatask.html
     """
     qqid = '1879'
-    result = updatask_chy.query(qqid)
+    result = updatask.query(qqid)
     return render_template("updatask.html", res = result)
 
 @app.route('/updated')
@@ -65,7 +65,7 @@ def is_updated():
     uqcontent = request.args.get("qcontent")
     uqlabel = request.args.get("qlabel")
     print(uqid, uqcontent, uqlabel)
-    updatask_chy.updat(uqid, uqlabel, uqcontent)
+    updatask.updat(uqid, uqlabel, uqcontent)
     return render_template("updated.html")
 
 @app.route('/showlabel')
@@ -82,7 +82,7 @@ def toshowask(ulabel):
     展示排列问题
     :return:showask.html
     """
-    result = showask_chy.query(None, ulabel)
+    result = showask.query(None, ulabel)
     print(result)
     return render_template("showask.html", result = result)
 
@@ -103,7 +103,7 @@ def showallask():
     展示全部问题
     :return: showask.html
     """
-    result = showask_chy.query(None, None, ulabel)
+    result = showask.query(None, None, ulabel)
     print(result)
     return render_template("showask.html",result=result)
 
