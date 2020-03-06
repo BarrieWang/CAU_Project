@@ -24,6 +24,8 @@
             <td>{{ i.ques_content }}</td>
             <td>{{ i.ques_time }}</td>
              <td>{{ i.ques_collect }}</td>
+             <td><a href="/toupdatask/{{ i.qid }}"><button>修改</button></a></td>
+             <td><a href="/todeletask/{{ i.qid }}"><button>删除</button></a></td>
             {% endfor %}
         </tr>
     </table>
