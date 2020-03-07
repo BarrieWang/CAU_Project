@@ -9,7 +9,7 @@
 {% block main %}
     <h3 class="page_title">{{ question.ques_title }}</h3>
     <p class="question-info">
-        <span class="question-info-author">{{ '作者: %s' % question.uid }}</span>
+        <span class="question-info-author">{{ '作者: %s' % question.getuname() }}</span>
         <span class="question-info-time">{{ '时间: %s' % question.ques_time }}</span>
     </p>
 {#    <form action="{{ url_for('upgrade',question_id=question.id) }}">#}
@@ -31,7 +31,7 @@
 
     <hr>
     <h4>回答：</h4>
-    <form action="{{ url_for('add_answer') }}" method="post">
+    <form action="{{ url_for('add_answer')+'?source='+question.qid }}" method="post">
         <div class="form-group">
             <input type="text" class="form-control" placeholder="请发表回答" name="ans_content">
             <input type="hidden" name="qid" value = '{{ question.qid }}'>
@@ -43,11 +43,11 @@
         </div>
         <hr>
     <ul>
-            {% for answer in question.answers %}
+            {% for answer in answers %}
             <li>
                 <div class="user-info">
                     <img class="avatar" src="{{ url_for('static',filename = 'images/timg.jpeg') }}" alt="头像">
-                    <span class="name">{{ answer.author.name }}</span>
+                    <span class="name">{{ answer.getuname() }}</span>
                     <span class="ans_time">{{ answer.ans_time }}</span>
                 </div>
                 <p class="answer-content">

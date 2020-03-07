@@ -2,12 +2,13 @@ from flask import request
 from urllib.parse import urlparse, urljoin
 
 
-def get_next():
+def get_args(arg):
     """
-    获取URL中的next字段并检查安全性
-    :return: str next字段url
+    获取URL中的字段并检查安全性
+    :param arg: str 字段名
+    :return: str arg字段的内容
     """
-    for target in request.args.get('next'), request.referrer:
+    for target in request.args.get(arg), request.referrer:
         if not target:
             return None
         if is_safe_url(target):

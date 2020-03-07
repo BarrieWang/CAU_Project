@@ -1,3 +1,4 @@
+# coding=utf-8
 import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -6,6 +7,8 @@ from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
 from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy import exc
 from sqlalchemy import and_, or_
+from util.util_logging import UtilLogging
+from util.util_parameter import UtilParameter
 from flask_login import UserMixin
 from flask_login._compat import text_type
 # from util.util_logging import UtilLogging as ULog
@@ -68,6 +71,12 @@ class Questions(Base):
     ques_time = Column(DateTime, default=datetime.datetime.now)
     ques_collect = Column(Integer, default=0)
 
+    def getuname(self):
+        parameter = UtilParameter()
+        logger = UtilLogging(parameter, False, False, False)
+        mysql = UtilMysql(parameter.get_config("mysql"), logger)
+        return mysql.select(Users, Users.uid == self.uid)[0].name
+
     def __str__(self):
         return self.qid + " -- " + self.uid\
                + "\n" + self.label + " -- " + self.ques_title + " : " + self.ques_content \
@@ -86,6 +95,13 @@ class Answers(Base):
     ans_content = Column(LONGTEXT)
     ans_time = Column(DateTime, default=datetime.datetime.now)
     ans_collect = Column(Integer, default=0)
+    uname = None
+
+    def getuname(self):
+        parameter = UtilParameter()
+        logger = UtilLogging(parameter, False, False, False)
+        mysql = UtilMysql(parameter.get_config("mysql"), logger)
+        return mysql.select(Users, Users.uid == self.uid)[0].name
 
     def __str__(self):
         return self.aid + " -- " + self.uid + " / " + self.qid\
@@ -190,7 +206,8 @@ class UtilMysql:
         try:
             session.add(obj)
             session.commit()
-        except exc.SQLAlchemyError:
+        except exc.SQLAlchemyError as e:
+            print(e)
             self.logger.error("Wrong Insert Instruction")
         session.close()
 

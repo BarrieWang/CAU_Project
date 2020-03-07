@@ -1,11 +1,12 @@
 # coding=utf-8
 from flask import Flask, render_template, request, redirect, session, url_for
-from flask_login import LoginManager, login_required, login_user, logout_user
+from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from util.util_mysql import Users, UtilMysql, and_, Questions, Answers
 from util.util_parameter import UtilParameter
 from util.util_logging import UtilLogging
-from util.util_web import get_next
+from util.util_web import get_args
 from decorators import login_limit
+import uuid
 # 数据库连接，config.py为配置文件
 # ===============================================================
 
@@ -34,7 +35,7 @@ def index():
 @app.route('/all')
 def yy_main_page():
     context = {
-        'questions': Questions.query.all(),
+        'questions': mysql.select(Questions),
         # 'count':Count.query.all()
     }
     return render_template('yy_main.html', **context)
@@ -43,7 +44,7 @@ def yy_main_page():
 @app.route('/login', methods=['GET', 'POST'])
 def yy_login():
     if request.method == 'GET':
-        nexturl = get_next()
+        nexturl = get_args('next')
         if nexturl:
             session['next'] = nexturl
         else:
@@ -53,7 +54,7 @@ def yy_login():
         user = mysql.select(Users, and_(Users.name == request.form.get(
             'name'), Users.passwd == request.form.get('passwd')))
         if user:
-            login_user(user)
+            login_user(user[0])
             nexturl = session.get('next')
             if nexturl:
                 session.pop('next')
@@ -79,9 +80,9 @@ def yy_regist():
         if passwd1 != passwd2:
             return u'两次密码不相等'
         else:
-            user = Users(name=name, passwd=passwd1)
-            mysql.insert(user)
+            user = Users(uid="U"+str(uuid.uuid4().hex), name=name, passwd=passwd1)
             login_user(user)
+            mysql.insert(user)
             return redirect("/")
 
 # 主页展示
@@ -93,10 +94,9 @@ def yy_show():
     else:
         ques_title = request.form.get('ques_title')
         ques_content = request.form.get('ques_content')
-        uid = session.get('uid')
-        user = Users.query.filter(Users.uid == uid).first()
-        question = Questions(ques_title=ques_title, ques_content=ques_content,)
-        question.uid = user
+        uid = current_user.uid
+        question = Questions(qid="Q"+str(uuid.uuid4().hex), ques_title=ques_title, ques_content=ques_content,)
+        question.uid = uid
         mysql.insert(question)
         return redirect(url_for('yy_main_page'))
 
@@ -111,28 +111,32 @@ def logout():
 # 展示话题详情界面
 @app.route('/details/<qid>')
 def yy_details(qid):
-    question = Questions.query.filter(Questions.qid == qid).first()
-    return render_template('yy_details.html', question=question)
+    question = mysql.select(Questions, Questions.qid == qid)[0]
+    # uname = mysql.s
+    answers = mysql.select(Answers, Answers.qid == question.qid)
+    return render_template('yy_details.html', question=question, answers=answers)
 
 # 发表回答的界面
-@app.route('/add_answer/', methods=['POST'])
-@login_limit
+@app.route('/add_answer', methods=['GET', 'POST'])
+@login_required
 def add_answer():
+    if request.method == 'GET':
+        sourceurl = get_args('source')
+        return redirect('/details/'+sourceurl)
     ans_content = request.form.get('ans_content')
+    print(ans_content)
     qid = request.form.get('qid')
-    answer = Answers(ans_content=ans_content)
-    uid = session.get('user_id')
-    user = Users.query.filter(Users.uid == uid).first()
-    question = Questions.query.filter(Questions.qid == qid).first()
-    answer.author = user
-    answer.question = question
+    answer = Answers(aid="A"+str(uuid.uuid4().hex), ans_content=ans_content)
+    uid = current_user.uid
+    answer.uid = uid
+    answer.qid = qid
     mysql.insert(answer)
     return redirect(url_for('yy_details', qid=qid))
 
 
 @login_manager.user_loader
 def load_user(user_id):
-    return mysql.select(Users, Users.uid == user_id)
+    return mysql.select(Users, Users.uid == user_id)[0]
 
 
 '''
