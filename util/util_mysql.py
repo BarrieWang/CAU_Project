@@ -23,15 +23,15 @@ class Users(UserMixin, Base):
     """
 
     __tablename__ = 'user'
-    uid = Column(String(20), primary_key=True)
+    uid = Column(String(40), primary_key=True)
     name = Column(String(50), nullable=False)
-    passwd = Column(String(50), nullable=False)
-    email = Column(String(50), unique=True)
-    labelset = Column(String(300))  # 若干个用逗号连接的label字符串
+    passwd = Column(String(100), nullable=False)
+    email = Column(String(100), unique=True)
+    labelset = Column(String(300), default="")  # 用户偏好，若干个用逗号连接的label字符串
     regtime = Column(DateTime, default=datetime.datetime.now)  # 不能加括号，加了括号，以后永远是当前时间
 
     def __str__(self):
-        return self.uid + " -- " + self.name + ":" + self.passwd + " -- " + str(self.regtime)
+        return self.uid + " -- " + self.name + " : " + self.passwd + " -- " + str(self.regtime)
 
     def get_id(self):
         return text_type(self.uid)
@@ -43,11 +43,15 @@ class UserCounts(Base):
     """
 
     __tablename__ = "user_count"
-    uid = Column(String(20), primary_key=True)
+    uid = Column(String(40), primary_key=True)
     list = ["0" for _ in labels]
     total_count = Column(String(100), default=",".join(list))  # 整体创作量，对应每个label，用逗号隔开
     recent_count = Column(String(100), default=",".join(list))  # 近期创作量，对应每个label，用逗号隔开
-    recent_qid = Column(LONGTEXT)  # 近期创作的问题，若干个用逗号连接的qid字符串
+    recent_qid = Column(LONGTEXT, default="")  # 近期创作的问题，若干个用逗号连接的qid字符串
+
+    def __str__(self):
+        return self.uid + " -- " + self.total_count + " / " + self.recent_count\
+               + "\n" + self.recent_qid
 
 
 class Questions(Base):
@@ -56,13 +60,18 @@ class Questions(Base):
     """
 
     __tablename__ = "question"
-    qid = Column(String(20), primary_key=True)
-    uid = Column(String(20), ForeignKey('user.uid'), nullable=False)
+    qid = Column(String(40), primary_key=True)
+    uid = Column(String(40), ForeignKey('user.uid'), nullable=False)
     label = Column(String(30))
     ques_title = Column(String(50))
     ques_content = Column(Text)
     ques_time = Column(DateTime, default=datetime.datetime.now)
     ques_collect = Column(Integer, default=0)
+
+    def __str__(self):
+        return self.qid + " -- " + self.uid\
+               + "\n" + self.label + " -- " + self.ques_title + " : " + self.ques_content \
+               + "\n" + str(self.ques_time) + " -- " + str(self.ques_collect)
 
 
 class Answers(Base):
@@ -71,12 +80,17 @@ class Answers(Base):
     """
 
     __tablename__ = "answer"
-    aid = Column(String(20), primary_key=True)
-    uid = Column(String(20), ForeignKey('user.uid'), nullable=False)
-    qid = Column(String(20), ForeignKey('question.qid'), nullable=False)
+    aid = Column(String(40), primary_key=True)
+    uid = Column(String(40), ForeignKey('user.uid'), nullable=False)
+    qid = Column(String(40), ForeignKey('question.qid'), nullable=False)
     ans_content = Column(LONGTEXT)
     ans_time = Column(DateTime, default=datetime.datetime.now)
     ans_collect = Column(Integer, default=0)
+
+    def __str__(self):
+        return self.aid + " -- " + self.uid + " / " + self.qid\
+               + "\n" + self.ans_content \
+               + "\n" + str(self.ans_time) + " -- " + str(self.ans_collect)
 
 
 class QuesCollections(Base):
@@ -85,9 +99,12 @@ class QuesCollections(Base):
     """
 
     __tablename__ = "ques_collection"
-    cid = Column(String(20), primary_key=True)
-    uid = Column(String(20), ForeignKey('user.uid'), nullable=False)
-    qid = Column(String(20), ForeignKey('question.qid'), nullable=False)
+    cid = Column(String(40), primary_key=True)
+    uid = Column(String(40), ForeignKey('user.uid'), nullable=False)
+    qid = Column(String(40), ForeignKey('question.qid'), nullable=False)
+
+    def __str__(self):
+        return self.cid + " -- " + self.uid + " / " + self.qid
 
 
 class AnsCollections(Base):
@@ -96,9 +113,12 @@ class AnsCollections(Base):
     """
 
     __tablename__ = "ans_collection"
-    cid = Column(String(20), primary_key=True)
-    uid = Column(String(20), ForeignKey('user.uid'), nullable=False)
-    aid = Column(String(20), ForeignKey('answer.aid'), nullable=False)
+    cid = Column(String(40), primary_key=True)
+    uid = Column(String(40), ForeignKey('user.uid'), nullable=False)
+    aid = Column(String(40), ForeignKey('answer.aid'), nullable=False)
+
+    def __str__(self):
+        return self.cid + " -- " + self.uid + " / " + self.aid
 
 
 def get_conn_url(args):
@@ -133,15 +153,31 @@ class UtilMysql:
         )
         # Base.metadata.create_all(self.engine)  # 建表
         self.Session = sessionmaker(bind=self.engine)
-        self.session = self.Session()
 
     def __del__(self):
         """
         断开连接
         """
 
-        self.session.close()
+        self.Session.close_all()
         # Base.metadata.drop_all(self.engine)  # 删除表
+        self.engine.dispose()
+
+    def display(self, table=None):
+        """
+        查看表中全部记录
+        :param table: 数据所在表，输入对应的类名
+        :return:
+        """
+
+        if table is not None:
+            for rec in self.select(table):
+                print(rec)
+        else:
+            for table_ in [Users, UserCounts, Questions, Answers, QuesCollections, AnsCollections]:
+                for rec in self.select(table_):
+                    print(rec)
+                print()
 
     def insert(self, obj):
         """
@@ -150,12 +186,13 @@ class UtilMysql:
         :return:
         """
 
+        session = self.Session()
         try:
-            self.session.add(obj)
-            self.session.commit()
-        except exc.SQLAlchemyError as e:
-            print(e)
+            session.add(obj)
+            session.commit()
+        except exc.SQLAlchemyError:
             self.logger.error("Wrong Insert Instruction")
+        session.close()
 
     def insert_all(self, objs):
         """
@@ -164,11 +201,13 @@ class UtilMysql:
         :return:
         """
 
+        session = self.Session()
         try:
-            self.session.add_all(objs)
-            self.session.commit()
+            session.add_all(objs)
+            session.commit()
         except exc.SQLAlchemyError:
             self.logger.error("Wrong Insert Instruction")
+        session.close()
 
     def delete(self, table, func=None):
         """
@@ -179,14 +218,16 @@ class UtilMysql:
         :return:
         """
 
+        session = self.Session()
         try:
             if func is not None:
-                self.session.query(table).filter(func).delete()
+                session.query(table).filter(func).delete()
             else:
-                self.session.query(table).delete()
-            self.session.commit()
+                session.query(table).delete()
+            session.commit()
         except exc.SQLAlchemyError:
             self.logger.error("Wrong Delete Instruction")
+        session.close()
 
     def update(self, table, data, func=None):
         """
@@ -197,14 +238,16 @@ class UtilMysql:
         :return:
         """
 
+        session = self.Session()
         try:
             if func is not None:
-                self.session.query(table).filter(func).update(data)
+                session.query(table).filter(func).update(data)
             else:
-                self.session.query(table).update(data)
-            self.session.commit()
+                session.query(table).update(data)
+            session.commit()
         except exc.SQLAlchemyError:
             self.logger.error("Wrong Update Instruction")
+        session.close()
 
     def select(self, table, func=None):
         """
@@ -215,13 +258,15 @@ class UtilMysql:
         """
 
         result = []
+        session = self.Session()
         try:
             if func is not None:
-                result = self.session.query(table).filter(func).all()
+                result = session.query(table).filter(func).all()
             else:
-                result = self.session.query(table).all()
+                result = session.query(table).all()
         except exc.SQLAlchemyError:
-            self.logger.error("Wrong Update Instruction")
+            self.logger.error("Wrong Select Instruction")
+        session.close()
         return result
 
 
