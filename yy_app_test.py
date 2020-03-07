@@ -1,48 +1,71 @@
 # coding=utf-8
-
-from flask import Flask,render_template,request,url_for,redirect,session
-# from exists import db
-import config
-import os
-from models import User,Question,Answers,Count
+from flask import Flask, render_template, request, redirect, session, url_for
+from flask_login import LoginManager, login_required, login_user, logout_user
+from util.util_mysql import Users, UtilMysql, and_, Questions, Answers
+from util.util_parameter import UtilParameter
+from util.util_logging import UtilLogging
+from util.util_web import get_next
 from decorators import login_limit
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 # 数据库连接，config.py为配置文件
 # ===============================================================
-db = SQLAlchemy()
+
 app = Flask(__name__)
-app.config.from_object(config)
-db.init_app(app)
+app.secret_key = "7cWjrCrxe2MR68HTLwVUWQ=="
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "yy_login"
+
+parameter = UtilParameter()
+logger = UtilLogging(parameter, False, False, False)
+mysql = UtilMysql(parameter.get_config("mysql"), logger)
+
+
+@app.route('/')
+def index():
+    """
+    首页
+    :return: index.html
+    """
+    return render_template("index.html")
+
+
 # ===============================================================
 # 主页代码 --- 用于展示所有的问题 以及相应的答案链接
-@app.route('/')
+@app.route('/all')
 def yy_main_page():
     context = {
-        'questions': Question.query.all(),
-        #'count':Count.query.all()
+        'questions': Questions.query.all(),
+        # 'count':Count.query.all()
     }
     return render_template('yy_main.html', **context)
 
 # 登陆界面 --- 用于让用户登陆 --- 若密码错误将会提示账号或密码错误
-@app.route('/yy_login/',methods=['GET','POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def yy_login():
     if request.method == 'GET':
-        return render_template('yy_login.html')
-    if request.method == 'POST':
-        name = request.form.get('name')
-        passwd = request.form.get('passwd')
-        user = User.query.filter(User.name == name, User.passwd == passwd).first()
-        if user:
-            session['user_id'] = user.uid
-            session.permanent = True
-            return redirect(url_for('yy_main_page'))
-        # not the function render_template()
+        nexturl = get_next()
+        if nexturl:
+            session['next'] = nexturl
         else:
-            return u'账号或密码错误'
+            session['next'] = request.referrer
+        return render_template("yy_login.html")
+    else:
+        user = mysql.select(Users, and_(Users.name == request.form.get(
+            'name'), Users.passwd == request.form.get('passwd')))
+        if user:
+            login_user(user)
+            nexturl = session.get('next')
+            if nexturl:
+                session.pop('next')
+            else:
+                nexturl = "/"
+            return redirect(nexturl)
+        else:
+            return render_template("yy_login.html")
+
 
 # 注册页面 --- 用于新用户注册
-@app.route('/yy_regist/',methods=['GET','POST'])
+@app.route('/regist/', methods=['GET', 'POST'])
 def yy_regist():
     if request.method == 'GET':
         return render_template('yy_regist.html')
@@ -50,20 +73,20 @@ def yy_regist():
         name = request.form.get('name')
         passwd1 = request.form.get('passwd1')
         passwd2 = request.form.get('passwd2')
-        user = User.query.filter(User.name == name).first()
+        user = mysql.select(Users, Users.name == name)
         if user:
             return u'已经被注册'
         if passwd1 != passwd2:
             return u'两次密码不相等'
         else:
-            user = User(name=name,passwd=passwd1)
-            db.session.add(user)
-            db.session.commit()
-            return redirect(url_for('yy_login'))
+            user = Users(name=name, passwd=passwd1)
+            mysql.insert(user)
+            login_user(user)
+            return redirect("/")
 
 # 主页展示
-@app.route('/yy_show/', methods=["GET","POST"])
-@login_limit
+@app.route('/show/', methods=["GET", "POST"])
+@login_required
 def yy_show():
     if request.method == 'GET':
         return render_template('yy_show.html')
@@ -71,33 +94,25 @@ def yy_show():
         ques_title = request.form.get('ques_title')
         ques_content = request.form.get('ques_content')
         uid = session.get('uid')
-        user = User.query.filter(User.uid == uid).first()
-        question = Question(ques_title=ques_title,ques_content=ques_content,)
+        user = Users.query.filter(Users.uid == uid).first()
+        question = Questions(ques_title=ques_title, ques_content=ques_content,)
         question.uid = user
-        db.session.add(question)
-        db.session.commit()
+        mysql.insert(question)
         return redirect(url_for('yy_main_page'))
 
 # 注销功能实现 --- 注销后跳转主页
-@app.route('/logout/')
+@app.route('/logout')
+@login_required
 def logout():
-    session.pop('user_id')
-    return redirect(url_for('yy_login'))
+    logout_user()
+    return redirect('/')
 
-# 限制登陆功能实现
-@app.context_processor
-def my_context_processor():
-    user_id = session.get('user_id')
-    if user_id:
-        user = User.query.filter(User.uid == user_id).first()
-        return {'user': user}
-    return {}
 
 # 展示话题详情界面
-@app.route('/yy_details/<qid>')
+@app.route('/details/<qid>')
 def yy_details(qid):
-    question = Question.query.filter(Question.qid == qid).first()
-    return render_template('yy_details.html', question = question)
+    question = Questions.query.filter(Questions.qid == qid).first()
+    return render_template('yy_details.html', question=question)
 
 # 发表回答的界面
 @app.route('/add_answer/', methods=['POST'])
@@ -107,13 +122,19 @@ def add_answer():
     qid = request.form.get('qid')
     answer = Answers(ans_content=ans_content)
     uid = session.get('user_id')
-    user = User.query.filter(User.uid == uid).first()
-    question = Question.query.filter(Question.qid == qid).first()
+    user = Users.query.filter(Users.uid == uid).first()
+    question = Questions.query.filter(Questions.qid == qid).first()
     answer.author = user
     answer.question = question
-    db.session.add(answer)
-    db.session.commit()
-    return redirect(url_for('yy_details',qid=qid))
+    mysql.insert(answer)
+    return redirect(url_for('yy_details', qid=qid))
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return mysql.select(Users, Users.uid == user_id)
+
+
 '''
 # 这个不太对
 # 实现收藏功能

@@ -10,6 +10,8 @@
     <br>
     <br>
     <button id="loadlink">Async Load</button>
+    <br>
+    <button id="submit">Ajax Post</button>
     <p id="loadcontent"></p>
 </body>
 <script type="text/javascript">
@@ -17,6 +19,11 @@
         $.getJSON("jsonrequest", function(data){
             var word = data["result"]
             $('#loadcontent').append(word+"<br>")
+        })
+    })
+    $('#submit').on("click", function(event){
+        $.post("submit", {t1:"1", t2:"2", t3:"3"}, function(data){
+            console.log(data);
         })
     })
 </script>
