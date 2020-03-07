@@ -1,19 +1,16 @@
-import sqlalchemy
-import datetime
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from util import util_mysql
+import uuid
+from util.util_mysql import UtilMysql, Questions
+from util.util_logging import *
+from util.util_parameter import *
 
-#创建连接
-db = sqlalchemy.create_engine('mysql://guest:Guestpass1!@47.93.56.66:3306/CAU_Project')
 
-def add(uuid,ulabel,uques_content):
-    s = sessionmaker(bind=db)
-    session = s()
-    uqid = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-    question = util_mysql.Questions(qid=uqid,uid=uuid,label=ulabel,ques_content=uques_content,ques_time=datetime.datetime.now(),ques_collect=0)
-    session.add(question)
-    session.commit()
-    session.close()
+def add(uid, label, ques_title, ques_content,):
+    parameter = UtilParameter()
+    logger = UtilLogging(parameter, False, False, False)
+    db = UtilMysql(parameter.get_config("mysql"), logger)
 
-db.dispose()
+    uqid = uuid.uuid4().hex
+    uqid = 'Q' + uqid
+    question = Questions(qid=uqid,uid=uid,label=label,ques_title=ques_title, ques_content=ques_content,ques_time=datetime.datetime.now(),ques_collect=0)
+    db.insert(question)
+

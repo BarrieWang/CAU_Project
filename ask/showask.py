@@ -1,9 +1,7 @@
-import sqlalchemy
-from sqlalchemy.orm import sessionmaker
-from util.util_mysql import Questions
+from util.util_mysql import UtilMysql, Questions, Answers
+from util.util_logging import *
+from util.util_parameter import *
 
-#创建MySQL连接
-db = sqlalchemy.create_engine('mysql://guest:Guestpass1!@47.93.56.66:3306/CAU_Project')
 
 def query(uuid, uqid, ulabel):
     '''
@@ -11,16 +9,16 @@ def query(uuid, uqid, ulabel):
     :param:uuid:用户ID, uqid:问题ID, ulabel:问题标签
     :return:查询到全部数据
     '''
-    s = sessionmaker(bind=db)
-    session = s()
+    parameter = UtilParameter()
+    logger = UtilLogging(parameter, False, False, False)
+    db = UtilMysql(parameter.get_config("mysql"), logger)
     if uuid is None and ulabel is None and uqid is None:
-        res = session.query(Questions).all()
+        res = db.select(Questions)
         return res
     elif uuid is not None:
-        res = session.query(Questions).filter_by(uid = uuid).all()
+        res = db.select(Questions, Questions.uid == uuid)
         return res
     elif ulabel is not None:
-        res = session.query(Questions).filter_by(label = ulabel).all()
+        res = db.select(Questions, Questions.label == ulabel)
         return res
 
-db.dispose()
