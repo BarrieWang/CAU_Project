@@ -115,7 +115,7 @@ class DFAFilter:
     def parse(self, file_name):
         content = read_file("keyword", file_name, "")
         for keyword in content:
-            self.add(keyword.strip().encode("utf-8").lower())
+            self.add(keyword.strip().lower())
 
     def filter(self, message, repl="*"):
         if not isinstance(message, str):
@@ -161,6 +161,6 @@ class UtilFilter:
         str_ = self.f.filter(str_)
         total_num = len(str_)
         sensi_num = str_.count("*")
-        flag = sensi_num >= self.num and sensi_num / total_num >= self.rate
+        flag = sensi_num >= self.num or sensi_num / total_num >= self.rate
 
         return str_, flag
