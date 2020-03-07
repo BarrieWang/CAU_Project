@@ -143,3 +143,24 @@ class DFAFilter:
             start += 1
 
         return ''.join(ret)
+
+
+class UtilFilter:
+    """
+    敏感词屏蔽，并判断是否为敏感回答
+    """
+
+    def __init__(self, args):
+
+        self.f = DFAFilter()
+        self.num = args["min_num"]
+        self.rate = args["min_rate"]
+
+    def judge(self, str_):
+
+        str_ = self.f.filter(str_)
+        total_num = len(str_)
+        sensi_num = str_.count("*")
+        flag = sensi_num >= self.num and sensi_num / total_num >= self.rate
+
+        return str_, flag
