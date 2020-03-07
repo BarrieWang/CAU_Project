@@ -6,6 +6,8 @@ from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
 from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy import exc
 from sqlalchemy import and_, or_
+from flask_login import UserMixin
+from flask_login._compat import text_type
 # from util.util_logging import UtilLogging as ULog
 
 Base = declarative_base()
@@ -15,7 +17,7 @@ Base = declarative_base()
 labels = ["1", "2", "3", "4", "5"]
 
 
-class Users(Base):
+class Users(UserMixin, Base):
     """
     用户个人信息表
     """
@@ -30,6 +32,9 @@ class Users(Base):
 
     def __str__(self):
         return self.uid + " -- " + self.name + ":" + self.passwd + " -- " + str(self.regtime)
+
+    def get_id(self):
+        return text_type(self.uid)
 
 
 class UserCounts(Base):
@@ -148,7 +153,8 @@ class UtilMysql:
         try:
             self.session.add(obj)
             self.session.commit()
-        except exc.SQLAlchemyError:
+        except exc.SQLAlchemyError as e:
+            print(e)
             self.logger.error("Wrong Insert Instruction")
 
     def insert_all(self, objs):
