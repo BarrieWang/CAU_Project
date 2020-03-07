@@ -21,7 +21,7 @@ class Users(Base):
     """
 
     __tablename__ = 'user'
-    uid = Column(String(20), primary_key=True)
+    uid = Column(String(30), primary_key=True)
     name = Column(String(50), nullable=False)
     passwd = Column(String(50), nullable=False)
     email = Column(String(50), unique=True)
@@ -38,7 +38,7 @@ class UserCounts(Base):
     """
 
     __tablename__ = "user_count"
-    uid = Column(String(20), primary_key=True)
+    uid = Column(String(30), primary_key=True)
     list = ["0" for _ in labels]
     total_count = Column(String(100), default=",".join(list))  # 整体创作量，对应每个label，用逗号隔开
     recent_count = Column(String(100), default=",".join(list))  # 近期创作量，对应每个label，用逗号隔开
@@ -51,8 +51,8 @@ class Questions(Base):
     """
 
     __tablename__ = "question"
-    qid = Column(String(20), primary_key=True)
-    uid = Column(String(20), ForeignKey('user.uid'), nullable=False)
+    qid = Column(String(30), primary_key=True)
+    uid = Column(String(30), ForeignKey('user.uid'), nullable=False)
     label = Column(String(30))
     ques_title = Column(String(50))
     ques_content = Column(Text)
@@ -66,9 +66,9 @@ class Answers(Base):
     """
 
     __tablename__ = "answer"
-    aid = Column(String(20), primary_key=True)
-    uid = Column(String(20), ForeignKey('user.uid'), nullable=False)
-    qid = Column(String(20), ForeignKey('question.qid'), nullable=False)
+    aid = Column(String(30), primary_key=True)
+    uid = Column(String(30), ForeignKey('user.uid'), nullable=False)
+    qid = Column(String(30), ForeignKey('question.qid'), nullable=False)
     ans_content = Column(LONGTEXT)
     ans_time = Column(DateTime, default=datetime.datetime.now)
     ans_collect = Column(Integer, default=0)
@@ -80,9 +80,9 @@ class QuesCollections(Base):
     """
 
     __tablename__ = "ques_collection"
-    cid = Column(String(20), primary_key=True)
-    uid = Column(String(20), ForeignKey('user.uid'), nullable=False)
-    qid = Column(String(20), ForeignKey('question.qid'), nullable=False)
+    cid = Column(String(30), primary_key=True)
+    uid = Column(String(30), ForeignKey('user.uid'), nullable=False)
+    qid = Column(String(30), ForeignKey('question.qid'), nullable=False)
 
 
 class AnsCollections(Base):
@@ -91,9 +91,9 @@ class AnsCollections(Base):
     """
 
     __tablename__ = "ans_collection"
-    cid = Column(String(20), primary_key=True)
-    uid = Column(String(20), ForeignKey('user.uid'), nullable=False)
-    aid = Column(String(20), ForeignKey('answer.aid'), nullable=False)
+    cid = Column(String(30), primary_key=True)
+    uid = Column(String(30), ForeignKey('user.uid'), nullable=False)
+    aid = Column(String(30), ForeignKey('answer.aid'), nullable=False)
 
 
 def get_conn_url(args):
@@ -215,7 +215,7 @@ class UtilMysql:
             else:
                 result = self.session.query(table).all()
         except exc.SQLAlchemyError:
-            self.logger.error("Wrong Update Instruction")
+            self.logger.error("Wrong Select Instruction")
         return result
 
 
