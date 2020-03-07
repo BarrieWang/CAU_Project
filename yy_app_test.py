@@ -5,7 +5,7 @@ from util.util_mysql import Users, UtilMysql, and_, Questions, Answers
 from util.util_parameter import UtilParameter
 from util.util_logging import UtilLogging
 from util.util_web import get_args
-from decorators import login_limit
+from util.util_filter import UtilFilter
 import uuid
 # 数据库连接，config.py为配置文件
 # ===============================================================
@@ -19,6 +19,7 @@ login_manager.login_view = "yy_login"
 parameter = UtilParameter()
 logger = UtilLogging(parameter, False, False, False)
 mysql = UtilMysql(parameter.get_config("mysql"), logger)
+myfilter = UtilFilter(parameter.get_config("filter"))
 
 
 @app.route('/')
@@ -34,8 +35,11 @@ def index():
 # 主页代码 --- 用于展示所有的问题 以及相应的答案链接
 @app.route('/all')
 def yy_main_page():
+    questions = mysql.select(Questions)
+    for question in questions:
+        question.uname = mysql.select(Users, Users.uid == question.uid)[0].name
     context = {
-        'questions': mysql.select(Questions),
+        'questions': questions,
         # 'count':Count.query.all()
     }
     return render_template('yy_main.html', **context)
@@ -94,6 +98,8 @@ def yy_show():
     else:
         ques_title = request.form.get('ques_title')
         ques_content = request.form.get('ques_content')
+        ques_title, _ = myfilter.judge(ques_title)
+        ques_content, _ = myfilter.judge(ques_content)
         uid = current_user.uid
         question = Questions(qid="Q"+str(uuid.uuid4().hex), ques_title=ques_title, ques_content=ques_content,)
         question.uid = uid
@@ -112,8 +118,10 @@ def logout():
 @app.route('/details/<qid>')
 def yy_details(qid):
     question = mysql.select(Questions, Questions.qid == qid)[0]
-    # uname = mysql.s
+    question.uname = mysql.select(Users, Users.uid == question.uid)[0].name
     answers = mysql.select(Answers, Answers.qid == question.qid)
+    for answer in answers:
+        answer.uname = mysql.select(Users, Users.uid == answer.uid)[0].name
     return render_template('yy_details.html', question=question, answers=answers)
 
 # 发表回答的界面
@@ -124,7 +132,7 @@ def add_answer():
         sourceurl = get_args('source')
         return redirect('/details/'+sourceurl)
     ans_content = request.form.get('ans_content')
-    print(ans_content)
+    ans_content, _ = myfilter.judge(ans_content)
     qid = request.form.get('qid')
     answer = Answers(aid="A"+str(uuid.uuid4().hex), ans_content=ans_content)
     uid = current_user.uid
@@ -136,7 +144,11 @@ def add_answer():
 
 @login_manager.user_loader
 def load_user(user_id):
-    return mysql.select(Users, Users.uid == user_id)[0]
+    user = mysql.select(Users, Users.uid == user_id)
+    if user:
+        return mysql.select(Users, Users.uid == user_id)[0]
+    else:
+        return None
 
 
 '''

@@ -21,7 +21,7 @@
                     <span class="answer-num interact"><a href="{{ url_for('yy_details',qid = question.qid) }}">答案</a></span>
 {#                    <span class="see-num interact"><a href="{{ url_for('upgrade', question_id = question.id) }}">关注0</a></span>#}
 {#                    <span class="to-answer interact"><a href="{{ url_for('details',question_id = question.id) }}">我来解答</a></span>#}
-                    <span class="question-author">{{question.getuname()}}</span>
+                    <span class="question-author">{{question.uname}}</span>
                     <span class="question-time">{{question.ques_time}}</span>
                 </div>
             </div>

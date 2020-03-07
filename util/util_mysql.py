@@ -7,8 +7,6 @@ from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
 from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy import exc
 from sqlalchemy import and_, or_
-from util.util_logging import UtilLogging
-from util.util_parameter import UtilParameter
 from flask_login import UserMixin
 from flask_login._compat import text_type
 # from util.util_logging import UtilLogging as ULog
@@ -70,12 +68,7 @@ class Questions(Base):
     ques_content = Column(Text)
     ques_time = Column(DateTime, default=datetime.datetime.now)
     ques_collect = Column(Integer, default=0)
-
-    def getuname(self):
-        parameter = UtilParameter()
-        logger = UtilLogging(parameter, False, False, False)
-        mysql = UtilMysql(parameter.get_config("mysql"), logger)
-        return mysql.select(Users, Users.uid == self.uid)[0].name
+    uname = None
 
     def __str__(self):
         return self.qid + " -- " + self.uid\
@@ -96,12 +89,6 @@ class Answers(Base):
     ans_time = Column(DateTime, default=datetime.datetime.now)
     ans_collect = Column(Integer, default=0)
     uname = None
-
-    def getuname(self):
-        parameter = UtilParameter()
-        logger = UtilLogging(parameter, False, False, False)
-        mysql = UtilMysql(parameter.get_config("mysql"), logger)
-        return mysql.select(Users, Users.uid == self.uid)[0].name
 
     def __str__(self):
         return self.aid + " -- " + self.uid + " / " + self.qid\
