@@ -43,11 +43,11 @@
         </div>
         <hr>
     <ul>
-            {% for answer in question.answers %}
+            {% for i in answer %}
             <li>
                 <div class="user-info">
                     <img class="avatar" src="{{ url_for('static',filename = 'images/timg.jpeg') }}" alt="头像">
-                    <span class="name">{{ answer.author.name }}</span>
+                    <span class="name">{{ i.aid }}</span>
                     <span class="ans_time">{{ answer.ans_time }}</span>
                 </div>
                 <p class="answer-content">
