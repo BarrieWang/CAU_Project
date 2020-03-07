@@ -4,7 +4,7 @@ import csv
 import pickle
 
 root = os.path.abspath("")
-folder = {"log": "/logging", "config": "/config"}
+folder = {"log": "/logging", "config": "/config", "keyword": "/keyword"}
 suffix = {"json": ".json", "csv": ".csv", "tsv": ".tsv", "txt": ".txt", "pickle": "", "": ""}
 # root: 根目录
 # folder: 文件类型对应保存文件名
@@ -61,7 +61,7 @@ def read_file(file_type, file_name, file_format="json"):
             for line in f.readlines():
                 item = line.replace('\n', '').split('\t')
                 content.append(item)
-    elif file_format == "txt":
+    elif file_format == "txt" or file_format == "":
         with open(url, 'r', encoding="utf-8") as f:
             content = []
             for line in f.readlines():
@@ -103,7 +103,7 @@ def save_file(content, file_type, file_name, file_format="json"):
                     s += '\t' + str(line[i])
                 f.write(s)
                 f.write('\n')
-    elif file_format == "txt":
+    elif file_format == "txt" or file_format == "":
         with open(url, 'w', encoding='utf-8', newline='') as f:
             for line in content:
                 f.write(str(line))

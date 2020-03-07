@@ -29,6 +29,18 @@
       "description": "数据库名"
     }
   },
+  "filter": {
+    "min_num": {
+      "type": "int",
+      "default": 10,
+      "description": "判断为敏感回答的最小敏感字数"
+    },
+    "min_rate": {
+      "type": "float",
+      "default": 0.2,
+      "description": "判断为敏感回答的敏感字最小占比"
+    }
+  },
   "match": {
     "max_num": {
       "type": "int",

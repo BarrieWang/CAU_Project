@@ -169,12 +169,14 @@ class UtilMysql:
         )
         # Base.metadata.create_all(self.engine)  # 建表
         self.Session = sessionmaker(bind=self.engine)
+        self.session = self.Session()
 
     def __del__(self):
         """
         断开连接
         """
 
+        self.session.close()
         self.Session.close_all()
         # Base.metadata.drop_all(self.engine)  # 删除表
         self.engine.dispose()
@@ -202,14 +204,13 @@ class UtilMysql:
         :return:
         """
 
-        session = self.Session()
+        # session = self.Session()
         try:
-            session.add(obj)
-            session.commit()
-        except exc.SQLAlchemyError as e:
-            print(e)
+            self.session.add(obj)
+            self.session.commit()
+        except exc.SQLAlchemyError:
             self.logger.error("Wrong Insert Instruction")
-        session.close()
+        # session.close()
 
     def insert_all(self, objs):
         """
@@ -218,13 +219,13 @@ class UtilMysql:
         :return:
         """
 
-        session = self.Session()
+        # session = self.Session()
         try:
-            session.add_all(objs)
-            session.commit()
+            self.session.add_all(objs)
+            self.session.commit()
         except exc.SQLAlchemyError:
             self.logger.error("Wrong Insert Instruction")
-        session.close()
+        # session.close()
 
     def delete(self, table, func=None):
         """
@@ -235,16 +236,16 @@ class UtilMysql:
         :return:
         """
 
-        session = self.Session()
+        # session = self.Session()
         try:
             if func is not None:
-                session.query(table).filter(func).delete()
+                self.session.query(table).filter(func).delete()
             else:
-                session.query(table).delete()
-            session.commit()
+                self.session.query(table).delete()
+            self.session.commit()
         except exc.SQLAlchemyError:
             self.logger.error("Wrong Delete Instruction")
-        session.close()
+        # session.close()
 
     def update(self, table, data, func=None):
         """
@@ -255,16 +256,16 @@ class UtilMysql:
         :return:
         """
 
-        session = self.Session()
+        # session = self.Session()
         try:
             if func is not None:
-                session.query(table).filter(func).update(data)
+                self.session.query(table).filter(func).update(data)
             else:
-                session.query(table).update(data)
-            session.commit()
+                self.session.query(table).update(data)
+            self.session.commit()
         except exc.SQLAlchemyError:
             self.logger.error("Wrong Update Instruction")
-        session.close()
+        # session.close()
 
     def select(self, table, func=None):
         """
@@ -275,15 +276,15 @@ class UtilMysql:
         """
 
         result = []
-        session = self.Session()
+        # session = self.Session()
         try:
             if func is not None:
-                result = session.query(table).filter(func).all()
+                result = self.session.query(table).filter(func).all()
             else:
-                result = session.query(table).all()
+                result = self.session.query(table).all()
         except exc.SQLAlchemyError:
             self.logger.error("Wrong Select Instruction")
-        session.close()
+        # session.close()
         return result
 
 

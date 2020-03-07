@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 import json
-from ask import creatask, showask, updatask, deletask
+from ask import creatask, showask, updatask, deletask, showdetail
 app = Flask(__name__)
 
 
@@ -39,11 +39,12 @@ def is_created():
     :return: created.html
     """
     # 用户ID暂时无法获取，默认一个
-    uuid = '2016404040404'
-    uqcontent = request.args.get("qcontent")
-    uqlabel = request.args.get("qlabel")
-    print(uqcontent, uqlabel)
-    creatask.add(uuid, uqlabel, uqcontent)
+    uid = '2016404040404'
+    qtitle = request.args.get("qtitle")
+    qcontent = request.args.get("qcontent")
+    qlabel = request.args.get("qlabel")
+    print(qcontent, qlabel)
+    creatask.add(uid, qlabel, qtitle, qcontent)
     return render_template("created.html")
 
 
@@ -110,6 +111,33 @@ def showallask():
     result = showask.query(None, None, None)
     print(result)
     return render_template("showask.html", result=result)
+
+
+# 展示问题详情界面
+@app.route('/details/<qid>')
+def details(qid):
+    """
+    展示问题详情
+    :param qid: 问题ID
+    :return:
+    """
+    question, answer = showdetail.to_show_details(qid)
+    return render_template('showdetail.html', ques = question, ans = answer)
+
+
+@app.route('/answered')
+def is_answered():
+    """
+    回答函数
+    :return:answered.html
+    """
+    # 未加入登录机制，默认使用一个uid
+    uuid = "2016303030303"
+    uqid = request.args.get("qid")
+    acontent = request.args.get("acontent")
+    print(uqid, acontent)
+    showdetail.to_answer(uuid, uqid, acontent)
+    return render_template("answered.html")
 
 
 @app.route('/jsonrequest')
