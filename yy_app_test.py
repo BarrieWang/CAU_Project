@@ -97,7 +97,7 @@ def my_context_processor():
 @app.route('/yy_details/<qid>')
 def yy_details(qid):
     question = Question.query.filter(Question.qid == qid).first()
-    return render_template('yy_details.html', question = question)
+    return render_template('details.html', question = question)
 
 # 发表回答的界面
 @app.route('/add_answer/', methods=['POST'])
