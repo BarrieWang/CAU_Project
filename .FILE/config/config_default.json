@@ -49,8 +49,13 @@
     },
     "threshold": {
       "type": "float",
-      "default": 0,
+      "default": 0.8,
       "description": "筛选的下限阈值"
+    },
+    "encode_way": {
+      "type": "string",
+      "default": "ALL",
+      "description": "匹配方式，包含ALL,SOUND,SHAPE"
     }
   },
   "recommend": {
