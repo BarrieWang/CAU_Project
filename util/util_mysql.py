@@ -3,7 +3,7 @@ import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, Boolean
 from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy import exc
 from sqlalchemy import and_, or_
@@ -68,6 +68,7 @@ class Questions(Base):
     ques_content = Column(Text)
     ques_time = Column(DateTime, default=datetime.datetime.now)
     ques_collect = Column(Integer, default=0)
+    ques_anonymous = Column(Boolean, default=False)
     uname = None
 
     def __str__(self):
@@ -88,6 +89,7 @@ class Answers(Base):
     ans_content = Column(LONGTEXT)
     ans_time = Column(DateTime, default=datetime.datetime.now)
     ans_collect = Column(Integer, default=0)
+    ans_anonymous = Column(Boolean, default=False)
     uname = None
 
     def __str__(self):

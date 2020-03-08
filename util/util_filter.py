@@ -164,3 +164,7 @@ class UtilFilter:
         flag = sensi_num >= self.num or sensi_num / total_num >= self.rate
 
         return str_, flag
+
+    def add(self, keyword):
+
+        self.f.add(keyword)
