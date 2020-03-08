@@ -46,15 +46,14 @@ class Matcher:
             confidence = max(confidence, sum(conf))
         return confidence / len(wordc)
 
-    def sent_similarity(self, str1, str2):
+    def sent_similarity(self, words, str_):
         """
         在str2中匹配句子str1
         """
 
-        words = jieba.cut(str1)
         conf = []
         for word in words:
-            temp = self.word_similarity(word, str2)
+            temp = self.word_similarity(word, str_)
             # print(temp)
             conf.append(temp)
         return sum(conf) / len(conf)
@@ -68,7 +67,8 @@ class Matcher:
         """
 
         temp = mysql.select(Questions, Questions.label == get_label(target))
-        result = {t.qid: self.sent_similarity(target, t.ques_title) for t in temp}
+        words = jieba.cut(target)
+        result = {t.qid: self.sent_similarity(words, t.ques_title) for t in temp}
         result = sorted(result.items(), key=lambda kv: kv[1], reverse=True)
         # print(result)
 
