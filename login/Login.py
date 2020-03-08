@@ -1,4 +1,5 @@
 from util.util_mysql import *
+from werkzeug.security import generate_password_hash, check_password_hash
 import re
 
 
@@ -9,16 +10,12 @@ def checkuser(username, password, db):
     :param db: 数据库连接对象
     :return: 0：无用户名 1：密码不正确 用户数据库对象：登陆成功
     """
-
-    # print(type(Users.name==username))
     ret = db.select(Users, Users.name == username)
     # ret=db.select_mysql(sql="select * from user where name = '"+username+"'")
 
-    # print(ret[0].passwd)
-    # print(password)
     if ret is False:
         return 0
-    elif ret[0].passwd != password:
+    elif check_password_hash(ret[0].passwd, password) is False:
         return 1
     else:
         return ret[0]
@@ -56,7 +53,9 @@ def checkregister(username, password, repeatpasswd, useremail, db):
             idlist.append(int(item.uid))
         # print(idlist)
         userid = str(max(idlist)+1)
-        userobj = Users(uid=userid, name=username, passwd=password, email=useremail)
+        hashpasswd = generate_password_hash(password)
+        print(len(hashpasswd), hashpasswd)
+        userobj = Users(uid=userid, name=username, passwd=hashpasswd, email=useremail, authorization='1')
         db.insert(userobj)
 
         return userid
