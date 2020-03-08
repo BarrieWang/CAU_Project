@@ -115,7 +115,7 @@ class DFAFilter:
     def parse(self, file_name):
         content = read_file("keyword", file_name, "")
         for keyword in content:
-            self.add(keyword.strip().lower())
+            self.add(keyword.strip().encode("utf-8").decode('unicode_escape').lower())
 
     def filter(self, message, repl="*"):
         if not isinstance(message, str):
