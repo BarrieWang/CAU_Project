@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
+from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 import json
-from ask import creatask, showask, updatask, deletask, showdetail
+from ask import creatask, showask, updatask, delet, showdetail, collect
 app = Flask(__name__)
 
 
@@ -72,13 +73,23 @@ def is_updated():
     return render_template("updated.html")
 
 
-@app.route('/todeletask/<uqid>')
-def todelet(uqid):
+@app.route('/todeletq/<uqid>')
+def todeletq(uqid):
     """
     删除问题
     :return: nothing
     """
-    deletask.delet_ques(uqid)
+    delet.delet_ques(None, uqid)
+    return render_template("deleted.html")
+
+
+@app.route('/todeleta/<uaid>')
+def todeleta(uaid):
+    """
+    删除问题
+    :return: nothing
+    """
+    delet.delet_ans(None, None, uaid)
     return render_template("deleted.html")
 
 
@@ -138,6 +149,20 @@ def is_answered():
     print(uqid, acontent)
     showdetail.to_answer(uuid, uqid, acontent)
     return render_template("answered.html")
+
+
+@app.route('/tocollectq/<qid>')
+def tocollectq(qid):
+    uid = "2016303030303"
+    collect.to_collect_ques(uid, qid)
+    return render_template("collected.html")
+
+
+@app.route('/tocollecta/<aid>')
+def tocollecta(aid):
+    uid = "2016303030303"
+    collect.to_collect_ans(uid, aid)
+    return render_template("collected.html")
 
 
 @app.route('/jsonrequest')

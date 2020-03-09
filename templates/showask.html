@@ -25,6 +25,7 @@
             <td>{{ i.ques_time }}</td>
              <td>{{ i.ques_collect }}</td>
              <td><a href="/details/{{ i.qid }}"><button>详情</button></a></td>
+             <td><a href="/tocollectq/{{ i.qid }}"><button>收藏</button></a></td>
              <td><a href="/toupdatask/{{ i.qid }}"><button>修改</button></a></td>
              <td><a href="/todeletask/{{ i.qid }}"><button>删除</button></a></td>
             {% endfor %}
