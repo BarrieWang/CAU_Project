@@ -187,6 +187,13 @@ class UtilMysql:
                     print(rec)
                 print()
 
+    def get_ques(self, qids):
+        """
+        根据所给qid列表，获取对应的Question对象
+        """
+
+        return self.select(Questions, Questions.qid.in_(qids))
+
     def insert(self, obj):
         """
         插入单条记录
