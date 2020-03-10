@@ -55,7 +55,7 @@ def toupdatask(uqid):
     x修改问题
     :return: updatask.html
     """
-    result = updatask.query(uqid)
+    result = updatask.query_content(uqid)
     return render_template("updatask.html", res=result)
 
 
@@ -66,10 +66,11 @@ def is_updated():
     :return: updated.html
     """
     uqid = request.args.get("qid")
+    uqtitle = request.args.get("qtitle")
     uqcontent = request.args.get("qcontent")
     uqlabel = request.args.get("qlabel")
     print(uqid, uqcontent, uqlabel)
-    updatask.updat(uqid, uqlabel, uqcontent)
+    updatask.updat(uqid, uqlabel, uqtitle, uqcontent)
     return render_template("updated.html")
 
 
@@ -79,7 +80,7 @@ def todeletq(uqid):
     删除问题
     :return: nothing
     """
-    delet.delet_ques(None, uqid)
+    delet.delet_ques(uqid)
     return render_template("deleted.html")
 
 
@@ -89,7 +90,7 @@ def todeleta(uaid):
     删除问题
     :return: nothing
     """
-    delet.delet_ans(None, None, uaid)
+    delet.delet_ans(uaid)
     return render_template("deleted.html")
 
 

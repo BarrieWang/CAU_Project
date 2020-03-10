@@ -1,35 +1,28 @@
-import sqlalchemy
-from sqlalchemy.orm import sessionmaker
-from util import util_mysql
+from util.util_mysql import UtilMysql, Questions, Answers
+from util.util_logging import *
+from util.util_parameter import *
 
-#创建MySQL连接
-db = sqlalchemy.create_engine('mysql://guest:Guestpass1!@47.93.56.66:3306/CAU_Project')
 
-def query(uqid):
+def query_content(uqid):
     '''
-    查询函数
+    查询问题内容函数
     :return:查询到的数据
     '''
-    s = sessionmaker(bind=db)
-    session = s()
+    parameter = UtilParameter()
+    logger = UtilLogging(parameter, False, False, False)
+    db = UtilMysql(parameter.get_config("mysql"), logger)
     #条件查询
-    res = session.query(util_mysql.Questions).filter_by(qid=uqid).all()
-    print(res)
+    res = db.select(Questions, Questions.qid==uqid)
     return res
 
-def updat(uqid, ulabel, ucontent):
+def updat(uqid, ulabel, utitle, ucontent):
     """
     更新函数
     :param uqid:问题ID, ulabel:问题类别, ucontent:问题内容
     :return: none
     """
-    s = sessionmaker(bind=db)
-    session = s()
-    # 条件查询
-    res = session.query(util_mysql.Questions).filter_by(qid=uqid).one()
-    res.label = ulabel
-    res.ques_content = ucontent
-    session.commit()
-    session.close()
+    parameter = UtilParameter()
+    logger = UtilLogging(parameter, False, False, False)
+    db = UtilMysql(parameter.get_config("mysql"), logger)
+    db.update(Questions, {Questions.label:ulabel, Questions.ques_title:utitle, Questions.ques_content:ucontent}, Questions.qid==uqid)
 
-db.dispose()

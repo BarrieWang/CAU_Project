@@ -11,7 +11,7 @@
         <tr>
             <th>问题ID</th>
             <th>用户ID</th>
-            <th>问题所属类别</th>
+            <th>问题标题</th>
             <th>问题内容</th>
             <th>提问时间</th>
             <th>问题收藏量</th>
@@ -20,14 +20,14 @@
         <tr>
             <td>{{ i.qid }}</td>
             <td>{{ i.uid }}</td>
-            <td>{{ i.label }}</td>
+            <td>{{ i.ques_title }}</td>
             <td>{{ i.ques_content }}</td>
             <td>{{ i.ques_time }}</td>
              <td>{{ i.ques_collect }}</td>
              <td><a href="/details/{{ i.qid }}"><button>详情</button></a></td>
              <td><a href="/tocollectq/{{ i.qid }}"><button>收藏</button></a></td>
              <td><a href="/toupdatask/{{ i.qid }}"><button>修改</button></a></td>
-             <td><a href="/todeletask/{{ i.qid }}"><button>删除</button></a></td>
+             <td><a href="/todeletq/{{ i.qid }}"><button>删除</button></a></td>
             {% endfor %}
         </tr>
     </table>

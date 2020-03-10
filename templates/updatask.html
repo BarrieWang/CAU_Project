@@ -14,6 +14,8 @@
         {% for i in res %}
         <textarea rows="1" cols="20" name="qid" readonly="readonly">{{ i.qid }}</textarea>
         <br><br>
+        <textarea rows="1" cols="20" name="qtitle">{{ i.ques_title }}</textarea>
+        <br><br>
         <textarea rows="10" cols="50" name="qcontent">{{ i.ques_content }}</textarea>
         {% endfor %}
         <span id="sp"></span>

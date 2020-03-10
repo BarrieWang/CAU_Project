@@ -16,9 +16,9 @@ def query(uuid, uqid, ulabel):
         res = db.select(Questions)
         return res
     elif uuid is not None:
-        res = db.select(Questions, Questions.uid == uuid)
+        res = db.select(Questions, Questions.uid==uuid)
         return res
     elif ulabel is not None:
-        res = db.select(Questions, Questions.label == ulabel)
+        res = db.select(Questions, Questions.label==ulabel)
         return res
 
