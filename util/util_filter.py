@@ -2,7 +2,7 @@ import re
 from collections import defaultdict
 from util.util_filepath import read_file
 
-__all__ = ['NaiveFilter', 'BSFilter', 'DFAFilter']
+# __all__ = ['NaiveFilter', 'BSFilter', 'DFAFilter']
 
 
 class NaiveFilter:
