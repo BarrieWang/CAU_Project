@@ -73,9 +73,9 @@ class Matcher:
         # print(result)
 
         if self.MAX_NUM is None:
-            return result
+            return [id_ for id_, _ in result]
         else:
-            return result[:self.MAX_NUM]
+            return [id_ for id_, _ in result[:self.MAX_NUM]]
 
 '''
 import numpy as np
