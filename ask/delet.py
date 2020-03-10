@@ -25,7 +25,9 @@ def delet_ques(uqid):
     parameter = UtilParameter()
     logger = UtilLogging(parameter, False, False, False)
     db = UtilMysql(parameter.get_config("mysql"), logger)
-    db.delete(AnsCollections, and_(Answers.aid==AnsCollections.aid, Answers.qid==uqid))
+    flag = db.select(Answers.aid, Answers.qid==uqid)
+    flag1 = flag[0][0]
+    db.delete(AnsCollections, and_(AnsCollections.aid==flag1))
     db.delete(Answers, Answers.qid==uqid)
     db.delete(QuesCollections, QuesCollections.qid==uqid)
     db.delete(Questions, Questions.qid==uqid)
