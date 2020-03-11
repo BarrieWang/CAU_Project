@@ -23,7 +23,7 @@
             <td>{{ ques.ques_content }}</td>
             <td>{{ ques.ques_time }}</td>
              <td>{{ ques.ques_collect }}</td>
-             <td><a href="/toupdatask/{{ ques.qid }}"><button>修改</button></a></td>
+             <td><a href="/toupdatq/{{ ques.qid }}"><button>修改</button></a></td>
              <td><a href="/tocollectq/{{ ques.qid }}"><button>收藏</button></a></td>
              <td><a href="/todeletq/{{ ques.qid }}"><button>删除</button></a></td>
         </tr>
@@ -46,6 +46,7 @@
         <td>{{ i.ans_content }}</td>
         <td>{{ i.ans_time }}</td>
         <td>{{ i.ans_collect }}</td>
+        <td><a href="/toupdata/{{ i.aid }}"><button>修改</button></a></td>
         <td><a href="/tocollecta/{{ i.aid }}"><button>收藏</button></a></td>
         <td><a href="/todeleta/{{ i.aid }}"><button>删除</button></a></td>
     </tr>

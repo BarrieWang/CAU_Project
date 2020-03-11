@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Our Store</title>
+    <title>修改回答</title>
 </head>
 <body>
-<div style="text-align: center;">
-    <h2>Our puzzle collection</h2>
+<div align="center">
+    <h2>Thing's change, so does your bright</h2>
     <table border="1" align="center">
         <tr>
             <th>问题ID</th>
@@ -16,21 +16,29 @@
             <th>提问时间</th>
             <th>问题收藏量</th>
         </tr>
-         {% for i in result %}
         <tr>
+            {% for i in qres %}
             <td>{{ i.qid }}</td>
             <td>{{ i.uid }}</td>
             <td>{{ i.ques_title }}</td>
             <td>{{ i.ques_content }}</td>
             <td>{{ i.ques_time }}</td>
-             <td>{{ i.ques_collect }}</td>
-             <td><a href="/details/{{ i.qid }}"><button>详情</button></a></td>
-             <td><a href="/tocollectq/{{ i.qid }}"><button>收藏</button></a></td>
-             <td><a href="/toupdatq/{{ i.qid }}"><button>修改</button></a></td>
-             <td><a href="/todeletq/{{ i.qid }}"><button>删除</button></a></td>
+            <td>{{ i.ques_collect }}</td>
             {% endfor %}
         </tr>
     </table>
+    <form action="/updateda" method="get">
+        {% for i in ares %}
+        <input type="hidden" name="aid" value={{ i.aid }}>
+        <br><br>
+        <textarea rows="10" cols="50" name="acontent">{{ i.ans_content }}</textarea>
+        <span id="sp"></span>
+        {% endfor %}
+        <br><br><br><br><br>
+        <input type="submit" value="Submit">
+        &nbsp;&nbsp;
+        <input type="reset" value="Reset">
+    </form>
 </div>
 </body>
 </html>

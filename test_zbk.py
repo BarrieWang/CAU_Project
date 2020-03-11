@@ -7,7 +7,7 @@ from util.util_logging import UtilLogging
 from util.util_web import get_args
 from util.util_filter import UtilFilter
 import uuid
-from ask import creatask, showask, updatask, delet, showdetail, collect
+from ask import creatq, showq, updat, delet, showdetail, collect
 # 数据库连接，config.py为配置文件
 # ===============================================================
 
@@ -127,9 +127,9 @@ def logout():
 def to_creat_ask():
     """
     创建提问网页
-    :return: creatask.html
+    :return: creatq.html
     """
-    return render_template("creatask.html")
+    return render_template("creatq.html")
 
 
 @app.route('/created')
@@ -144,28 +144,29 @@ def is_created():
     qcontent = request.args.get("qcontent")
     qlabel = request.args.get("qlabel")
     print(qcontent, qlabel)
-    creatask.add(uid, qlabel, qtitle, qcontent)
+    creatq.add(uid, qlabel, qtitle, qcontent)
     return render_template("created.html")
 
 
-@app.route('/toupdatask/<uqid>')
-def toupdatask(uqid):
+@app.route('/toupdatq/<uqid>')
+def toupdatq(uqid):
     """
-    x修改问题
-    :return: updatask.html
+    修改问题
+    :param uqid:问题ID
+    :return updatq.html
     """
     uid = current_user.uid
-    result, state = updatask.query_content(uid, uqid)
+    result, state = updat.query_qcontent(uid, uqid)
     if state == True:
-        return render_template("updatask.html", res=result, state=state)
+        return render_template("updatq.html", res=result)
     else:
         return render_template("updated.html", state=state)
 
 
-@app.route('/updated')
-def is_updated():
+@app.route('/updatedq')
+def is_updatedq():
     """
-    提示创建成功
+    提示修改操作结果
     :return: updated.html
     """
     uid = current_user.uid
@@ -174,15 +175,44 @@ def is_updated():
     uqcontent = request.args.get("qcontent")
     uqlabel = request.args.get("qlabel")
     print(uqid, uqcontent, uqlabel)
-    state = updatask.updatq(uid, uqid, uqlabel, uqtitle, uqcontent)
+    state = updat.updatq(uid, uqid, uqlabel, uqtitle, uqcontent)
     return render_template("updated.html", state=state)
 
+
+@app.route('/toupdata/<uaid>')
+def toupdata(uaid):
+    """
+    修改回答
+    :return: updata.html
+    """
+    uid = current_user.uid
+    qresult, aresult, state = updat.query_acontent(uid, uaid)
+    print(qresult)
+    print(aresult)
+    if state == True:
+        return render_template("updata.html", qres=qresult, ares=aresult)
+    else:
+        return render_template("updated.html", state=state)
+
+
+@app.route('/updateda')
+def is_updateda():
+    """
+    提示修改操作结果
+    :return: updated.html
+    """
+    uid = current_user.uid
+    uaid = request.args.get("aid")
+    uacontent = request.args.get("acontent")
+    state = updat.updata(uid, uaid, uacontent)
+    return render_template("updated.html", state=state)
 
 @app.route('/todeletq/<uqid>')
 def todeletq(uqid):
     """
     删除问题
-    :return: nothing
+    :return: deleted.html
+    :return: state:操作状态
     """
     uid = current_user.uid
     state = delet.delet_ques(uqid, uid)
@@ -192,8 +222,9 @@ def todeletq(uqid):
 @app.route('/todeleta/<uaid>')
 def todeleta(uaid):
     """
-    删除问题
-    :return: nothing
+    删除回答
+    :return: deleted.html
+    :return: state:操作状态
     """
     uid = current_user.uid
     state = delet.delet_ans(uaid, uid)
@@ -215,7 +246,7 @@ def toshowask(ulabel):
     展示某类问题
     :return:showask.html
     """
-    result = showask.query(None, None, ulabel)
+    result = showq.query(None, None, ulabel)
     print(result)
     return render_template("showask.html", result=result)
 
@@ -226,7 +257,7 @@ def showallask():
     展示全部问题
     :return: showask.html
     """
-    result = showask.query(None, None, None)
+    result = showq.query(None, None, None)
     print(result)
     return render_template("showask.html", result=result)
 
@@ -279,7 +310,7 @@ def toshowcollectq(uid):
     :param uid:用户ID
     :return:收藏问题对象列表
     """
-    res = showask.queryCQ(uid)
+    res = showq.queryCQ(uid)
     return (render_template("showcollectq.html", result=res))
 
 
@@ -290,7 +321,7 @@ def toshowcollecta(uid):
     :param uid:用户ID
     :return:收藏回答对象列表
     """
-    res = showask.queryCA(uid)
+    res = showq.queryCA(uid)
     return (render_template("showcollecta.html", result=res))
 
 

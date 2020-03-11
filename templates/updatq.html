@@ -6,13 +6,10 @@
 </head>
 <body>
 <div align="center">
-    <h2>Update</h2>
-    <form action="/updated" method="get">
-        <p>
-            Thing's change, so does your puzzle
-        </p>
+    <h2>Thing's change, so does your puzzle</h2>
+    <form action="/updatedq" method="get">
         {% for i in res %}
-        <textarea rows="1" cols="20" name="qid" readonly="readonly">{{ i.qid }}</textarea>
+        <input type="hidden" name="qid" value={{ i.qid }}>
         <br><br>
         <textarea rows="1" cols="20" name="qtitle">{{ i.ques_title }}</textarea>
         <br><br>
