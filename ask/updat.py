@@ -20,7 +20,7 @@ def query_qcontent(uid, qid):
         state = False
     return res, state
 
-def updatq(uid, qid, label, title, content):
+def updatq(uid, qid, label, title, content, nameflag):
     """
     更新问题函数
     :param uid:用户ID
@@ -34,7 +34,11 @@ def updatq(uid, qid, label, title, content):
     db = UtilMysql(parameter.get_config("mysql"), logger)
     isOwner = db.select(Questions, and_(Questions.uid==uid, Questions.qid==qid))
     if len(isOwner) != 0:
-        db.update(Questions, {Questions.label:label, Questions.ques_title:title, Questions.ques_content:content, Questions.ques_time:datetime.datetime.now()}, Questions.qid==qid)
+        if nameflag == 'on':
+            noname = True
+        else:
+            noname = False
+        db.update(Questions, {Questions.label:label, Questions.ques_title:title, Questions.ques_content:content, Questions.ques_time:datetime.datetime.now(), Questions.ques_anonymous:noname}, Questions.qid==qid)
         state = True
     else:
         state = False
@@ -62,7 +66,7 @@ def query_acontent(uid, aid):
     return qres, ares, state
 
 
-def updata(uid, aid, content):
+def updata(uid, aid, content, nameflag):
     """
     更新回答函数
     :param uid:用户ID
@@ -75,7 +79,11 @@ def updata(uid, aid, content):
     db = UtilMysql(parameter.get_config("mysql"), logger)
     isOwner = db.select(Answers, and_(Answers.aid==aid, Answers.uid==uid))
     if len(isOwner) != 0:
-        db.update(Answers, {Answers.ans_content:content, Answers.ans_time:datetime.datetime.now()}, Answers.aid==aid)
+        if nameflag == 'on':
+            noname = True
+        else:
+            noname = False
+        db.update(Answers, {Answers.ans_content:content, Answers.ans_time:datetime.datetime.now(), Answers.ans_anonymous:noname}, Answers.aid==aid)
         state = True
     else:
         state = False

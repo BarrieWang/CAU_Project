@@ -19,7 +19,7 @@ def to_show_details(uqid):
     return ques, ans
 
 
-def to_answer(uid, qid, acontent):
+def to_answer(uid, qid, acontent, nameflag):
     """
     建立回答
     :param uuid:回答用户ID
@@ -31,10 +31,9 @@ def to_answer(uid, qid, acontent):
     logger = UtilLogging(parameter, False, False, False)
     db = UtilMysql(parameter.get_config("mysql"), logger)
     aid = 'A' + uuid.uuid4().hex
-    print(aid)
-    uans_time = datetime.datetime.now()
-    uans_collect = 0
-    answer = Answers(aid=aid, uid=uid, qid=qid, ans_content=acontent)
-    # answer = Answers(aid=uaid, uid=uuid, qid=uqid, ans_content=acontent, ans_time=uans_time, ans_collect=uans_collect)
-    print(answer)
+    if nameflag == 'on':
+        noname = True
+    else:
+        noname = False
+    answer = Answers(aid=aid, uid=uid, qid=qid, ans_content=acontent, ans_anonymous=noname)
     db.insert(answer)

@@ -143,8 +143,8 @@ def is_created():
     qtitle = request.args.get("qtitle")
     qcontent = request.args.get("qcontent")
     qlabel = request.args.get("qlabel")
-    print(qcontent, qlabel)
-    creatq.add(uid, qlabel, qtitle, qcontent)
+    nameflag = request.args.get("noname")
+    creatq.add(uid, qlabel, qtitle, qcontent, nameflag)
     return render_template("created.html")
 
 
@@ -174,8 +174,9 @@ def is_updatedq():
     uqtitle = request.args.get("qtitle")
     uqcontent = request.args.get("qcontent")
     uqlabel = request.args.get("qlabel")
+    nameflag = request.args.get("noname")
     print(uqid, uqcontent, uqlabel)
-    state = updat.updatq(uid, uqid, uqlabel, uqtitle, uqcontent)
+    state = updat.updatq(uid, uqid, uqlabel, uqtitle, uqcontent, nameflag)
     return render_template("updated.html", state=state)
 
 
@@ -204,7 +205,8 @@ def is_updateda():
     uid = current_user.uid
     uaid = request.args.get("aid")
     uacontent = request.args.get("acontent")
-    state = updat.updata(uid, uaid, uacontent)
+    nameflag = request.args.get("noname")
+    state = updat.updata(uid, uaid, uacontent, nameflag)
     return render_template("updated.html", state=state)
 
 @app.route('/todeletq/<uqid>')
@@ -284,8 +286,9 @@ def is_answered():
     uuid = current_user.uid
     uqid = request.args.get("qid")
     acontent = request.args.get("acontent")
+    nameflag = request.args.get("noname")
     print(uqid, acontent)
-    showdetail.to_answer(uuid, uqid, acontent)
+    showdetail.to_answer(uuid, uqid, acontent, nameflag)
     return render_template("answered.html")
 
 
