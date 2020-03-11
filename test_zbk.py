@@ -154,8 +154,12 @@ def toupdatask(uqid):
     x修改问题
     :return: updatask.html
     """
-    result = updatask.query_content(uqid)
-    return render_template("updatask.html", res=result)
+    uid = current_user.uid
+    result, state = updatask.query_content(uid, uqid)
+    if state == True:
+        return render_template("updatask.html", res=result, state=state)
+    else:
+        return render_template("updated.html", state=state)
 
 
 @app.route('/updated')
@@ -164,13 +168,14 @@ def is_updated():
     提示创建成功
     :return: updated.html
     """
+    uid = current_user.uid
     uqid = request.args.get("qid")
     uqtitle = request.args.get("qtitle")
     uqcontent = request.args.get("qcontent")
     uqlabel = request.args.get("qlabel")
     print(uqid, uqcontent, uqlabel)
-    updatask.updat(uqid, uqlabel, uqtitle, uqcontent)
-    return render_template("updated.html")
+    state = updatask.updatq(uid, uqid, uqlabel, uqtitle, uqcontent)
+    return render_template("updated.html", state=state)
 
 
 @app.route('/todeletq/<uqid>')
@@ -179,8 +184,9 @@ def todeletq(uqid):
     删除问题
     :return: nothing
     """
-    delet.delet_ques(uqid)
-    return render_template("deleted.html")
+    uid = current_user.uid
+    state = delet.delet_ques(uqid, uid)
+    return render_template("deleted.html", state = state)
 
 
 @app.route('/todeleta/<uaid>')
@@ -189,8 +195,9 @@ def todeleta(uaid):
     删除问题
     :return: nothing
     """
-    delet.delet_ans(uaid)
-    return render_template("deleted.html")
+    uid = current_user.uid
+    state = delet.delet_ans(uaid, uid)
+    return render_template("deleted.html", state = state)
 
 
 @app.route('/showlabel')

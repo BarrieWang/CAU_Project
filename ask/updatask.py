@@ -1,9 +1,9 @@
-from util.util_mysql import UtilMysql, Questions, Answers
+from util.util_mysql import UtilMysql, Questions, Answers, and_
 from util.util_logging import *
 from util.util_parameter import *
 
 
-def query_content(uqid):
+def query_content(uid, qid):
     '''
     查询问题内容函数
     :return:查询到的数据
@@ -11,18 +11,31 @@ def query_content(uqid):
     parameter = UtilParameter()
     logger = UtilLogging(parameter, False, False, False)
     db = UtilMysql(parameter.get_config("mysql"), logger)
-    #条件查询
-    res = db.select(Questions, Questions.qid==uqid)
-    return res
+    isOwner = db.select(Questions, and_(Questions.uid == uid, Questions.qid == qid))
+    if len(isOwner) != 0:
+        res = db.select(Questions, Questions.qid==qid)
+        state = True
+    else:
+        res = None
+        state = False
+    return res, state
 
-def updat(uqid, ulabel, utitle, ucontent):
+def updatq(uid, qid, label, title, content):
     """
     更新函数
-    :param uqid:问题ID, ulabel:问题类别, ucontent:问题内容
-    :return: none
+    :param qid:问题ID
+    :param label:问题类别
+    :param content:问题内容
+    :return state:更新状态
     """
     parameter = UtilParameter()
     logger = UtilLogging(parameter, False, False, False)
     db = UtilMysql(parameter.get_config("mysql"), logger)
-    db.update(Questions, {Questions.label:ulabel, Questions.ques_title:utitle, Questions.ques_content:ucontent}, Questions.qid==uqid)
+    isOwner = db.select(Questions, and_(Questions.uid==uid, Questions.qid==qid))
+    if len(isOwner) != 0:
+        db.update(Questions, {Questions.label:label, Questions.ques_title:title, Questions.ques_content:content}, Questions.qid==qid)
+        state = True
+    else:
+        state = False
+    return state
 
