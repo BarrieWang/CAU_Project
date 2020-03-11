@@ -265,6 +265,52 @@ def tocollecta(aid):
     return render_template("collected.html")
 
 
+@app.route('/toshowcollectq/<uid>')
+def toshowcollectq(uid):
+    """
+    展示收藏问题
+    :param uid:用户ID
+    :return:收藏问题对象列表
+    """
+    res = showask.queryCQ(uid)
+    return (render_template("showcollectq.html", result=res))
+
+
+@app.route('/toshowcollecta/<uid>')
+def toshowcollecta(uid):
+    """
+    展示收藏回答
+    :param uid:用户ID
+    :return:收藏回答对象列表
+    """
+    res = showask.queryCA(uid)
+    return (render_template("showcollecta.html", result=res))
+
+
+@app.route('/tocancelcollectq/<qid>')
+def tocancelcollectq(qid):
+    """
+    取消收藏问题
+    :param qid: 问题ID
+    :return:
+    """
+    uid = current_user.uid
+    collect.to_cancel_collectq(qid,uid)
+    return redirect('/toshowcollectq/<uid>')
+
+
+@app.route('/tocancelcollecta/<aid>')
+def tocancelcollecta(aid):
+    """
+    取消收藏回答
+    :param aid: 回答ID
+    :return:
+    """
+    uid = current_user.uid
+    collect.to_cancel_collecta(aid,uid)
+    return redirect('/toshowcollecta/<uid>')
+
+
 @login_manager.user_loader
 def load_user(user_id):
     user = mysql.select(Users, Users.uid == user_id)

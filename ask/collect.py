@@ -46,3 +46,16 @@ def to_collect_ans(uid, aid):
         db.insert(ansCollextion)
 
 
+def to_cancel_collectq(qid, uid):
+    parameter = UtilParameter()
+    logger = UtilLogging(parameter, False, False, False)
+    db = UtilMysql(parameter.get_config("mysql"), logger)
+    db.delete(QuesCollections, and_(QuesCollections.qid==qid, QuesCollections.uid==uid))
+
+
+def to_cancel_collecta(aid, uid):
+    parameter = UtilParameter()
+    logger = UtilLogging(parameter, False, False, False)
+    db = UtilMysql(parameter.get_config("mysql"), logger)
+    db.delete(AnsCollections, and_(AnsCollections.aid==aid, AnsCollections.uid==uid))
+
