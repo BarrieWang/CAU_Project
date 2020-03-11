@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Our Store</title>
+    <title>收藏问题</title>
 </head>
 <body>
 <div style="text-align: center;">
-    <h2>Our puzzle collection</h2>
+    <h2>几个菜呀，喝成这样</h2>
     <table border="1" align="center">
         <tr>
             <th>问题ID</th>
@@ -24,10 +24,8 @@
             <td>{{ i.ques_content }}</td>
             <td>{{ i.ques_time }}</td>
              <td>{{ i.ques_collect }}</td>
-             <td><a href="/details/{{ i.qid }}"><button>详情</button></a></td>
-             <td><a href="/tocollectq/{{ i.qid }}"><button>收藏</button></a></td>
-             <td><a href="/toupdatask/{{ i.qid }}"><button>修改</button></a></td>
-             <td><a href="/todeletq/{{ i.qid }}"><button>删除</button></a></td>
+             <td><a href="/details/{{ i.qid }}"><button>进入问题</button></a></td>
+             <td><a href="/tocancelcollectq/{{ i.qid }}"><button>取消收藏</button></a></td>
             {% endfor %}
         </tr>
     </table>

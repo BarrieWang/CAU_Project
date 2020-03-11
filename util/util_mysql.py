@@ -3,7 +3,7 @@ import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, Boolean
 from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy import exc
 from sqlalchemy import and_, or_
@@ -68,6 +68,7 @@ class Questions(Base):
     ques_content = Column(Text)
     ques_time = Column(DateTime, default=datetime.datetime.now)
     ques_collect = Column(Integer, default=0)
+    ques_anonymous = Column(Boolean, default=False)
     uname = None
 
     def __str__(self):
@@ -88,6 +89,7 @@ class Answers(Base):
     ans_content = Column(LONGTEXT)
     ans_time = Column(DateTime, default=datetime.datetime.now)
     ans_collect = Column(Integer, default=0)
+    ans_anonymous = Column(Boolean, default=False)
     uname = None
 
     def __str__(self):
@@ -149,10 +151,11 @@ class UtilMysql:
         self.logger = logger
         self.engine = create_engine(
             get_conn_url(args),
+            encoding="utf-8",
             max_overflow=0,  # 超过连接池大小外最多创建的连接
             pool_size=10,  # 连接池大小
             pool_timeout=30,  # 池中没有线程最多等待的时间，否则报错
-            pool_recycle=-1  # 多久之后对线程池中的线程进行一次连接的回收（重置）
+            pool_recycle=-1,  # 多久之后对线程池中的线程进行一次连接的回收（重置）
         )
         # Base.metadata.create_all(self.engine)  # 建表
         self.Session = sessionmaker(bind=self.engine)
@@ -183,6 +186,13 @@ class UtilMysql:
                 for rec in self.select(table_):
                     print(rec)
                 print()
+
+    def get_ques(self, qids):
+        """
+        根据所给qid列表，获取对应的Question对象
+        """
+
+        return self.select(Questions, Questions.qid.in_(qids))
 
     def insert(self, obj):
         """

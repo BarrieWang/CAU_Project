@@ -2,7 +2,7 @@ import re
 from collections import defaultdict
 from util.util_filepath import read_file
 
-__all__ = ['NaiveFilter', 'BSFilter', 'DFAFilter']
+# __all__ = ['NaiveFilter', 'BSFilter', 'DFAFilter']
 
 
 class NaiveFilter:
@@ -115,7 +115,7 @@ class DFAFilter:
     def parse(self, file_name):
         content = read_file("keyword", file_name, "")
         for keyword in content:
-            self.add(keyword.strip().lower())
+            self.add(keyword.strip().encode("utf-8").decode('unicode_escape').lower())
 
     def filter(self, message, repl="*"):
         if not isinstance(message, str):
@@ -164,3 +164,7 @@ class UtilFilter:
         flag = sensi_num >= self.num or sensi_num / total_num >= self.rate
 
         return str_, flag
+
+    def add(self, keyword):
+
+        self.f.add(keyword)

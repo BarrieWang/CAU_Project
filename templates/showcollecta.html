@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>收藏回答</title>
+</head>
+<body>
+<h2 align="center">Truth needs no color, with his color fixed</h2>
+<table border="1" align="center">
+    <tr>
+        <th>回答ID</th>
+        <th>回答用户ID</th>
+        <th>问题ID</th>
+        <th>回答内容</th>
+        <th>回答时间</th>
+        <th>回答收藏量</th>
+    </tr>
+    {% for i in result %}
+    <tr>
+        <td>{{ i.aid }}</td>
+        <td>{{ i.uid }}</td>
+        <td>{{ i.qid }}</td>
+        <td>{{ i.ans_content }}</td>
+        <td>{{ i.ans_time }}</td>
+        <td>{{ i.ans_collect }}</td>
+        <td><a href="/details/{{ i.qid }}"><button>进入问题</button></a></td>
+        <td><a href="/tocancelcollecta/{{ i.uid }}"><button>取消收藏</button></a></td>
+    </tr>
+    {% endfor %}
+</table>
+</body>
+</html>

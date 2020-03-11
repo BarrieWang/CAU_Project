@@ -1,35 +1,41 @@
-import sqlalchemy
-from sqlalchemy.orm import sessionmaker
-from util import util_mysql
+from util.util_mysql import UtilMysql, Questions, Answers, and_
+from util.util_logging import *
+from util.util_parameter import *
 
-#创建MySQL连接
-db = sqlalchemy.create_engine('mysql://guest:Guestpass1!@47.93.56.66:3306/CAU_Project')
 
-def query(uqid):
+def query_content(uid, qid):
     '''
-    查询函数
+    查询问题内容函数
     :return:查询到的数据
     '''
-    s = sessionmaker(bind=db)
-    session = s()
-    #条件查询
-    res = session.query(util_mysql.Questions).filter_by(qid=uqid).all()
-    print(res)
-    return res
+    parameter = UtilParameter()
+    logger = UtilLogging(parameter, False, False, False)
+    db = UtilMysql(parameter.get_config("mysql"), logger)
+    isOwner = db.select(Questions, and_(Questions.uid == uid, Questions.qid == qid))
+    if len(isOwner) != 0:
+        res = db.select(Questions, Questions.qid==qid)
+        state = True
+    else:
+        res = None
+        state = False
+    return res, state
 
-def updat(uqid, ulabel, ucontent):
+def updatq(uid, qid, label, title, content):
     """
     更新函数
-    :param uqid:问题ID, ulabel:问题类别, ucontent:问题内容
-    :return: none
+    :param qid:问题ID
+    :param label:问题类别
+    :param content:问题内容
+    :return state:更新状态
     """
-    s = sessionmaker(bind=db)
-    session = s()
-    # 条件查询
-    res = session.query(util_mysql.Questions).filter_by(qid=uqid).one()
-    res.label = ulabel
-    res.ques_content = ucontent
-    session.commit()
-    session.close()
+    parameter = UtilParameter()
+    logger = UtilLogging(parameter, False, False, False)
+    db = UtilMysql(parameter.get_config("mysql"), logger)
+    isOwner = db.select(Questions, and_(Questions.uid==uid, Questions.qid==qid))
+    if len(isOwner) != 0:
+        db.update(Questions, {Questions.label:label, Questions.ques_title:title, Questions.ques_content:content}, Questions.qid==qid)
+        state = True
+    else:
+        state = False
+    return state
 
-db.dispose()
