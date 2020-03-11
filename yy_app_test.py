@@ -36,8 +36,11 @@ def index():
 @app.route('/all')
 def yy_main_page():
     questions = mysql.select(Questions)
-    for question in questions:
-        question.uname = mysql.select(Users, Users.uid == question.uid)[0].name
+    try:
+        for question in questions:
+            question.uname = mysql.select(Users, Users.uid == question.uid)[0].name
+    except Exception:
+        return render_template("error.html")
     context = {
         'questions': questions,
         # 'count':Count.query.all()
@@ -58,7 +61,10 @@ def yy_login():
         user = mysql.select(Users, and_(Users.name == request.form.get(
             'name'), Users.passwd == request.form.get('passwd')))
         if user:
-            login_user(user[0])
+            try:
+                login_user(user[0])
+            except Exception:
+                return render_template("error.html")
             nexturl = session.get('next')
             if nexturl:
                 session.pop('next')
@@ -117,11 +123,14 @@ def logout():
 # 展示话题详情界面
 @app.route('/details/<qid>')
 def yy_details(qid):
-    question = mysql.select(Questions, Questions.qid == qid)[0]
-    question.uname = mysql.select(Users, Users.uid == question.uid)[0].name
-    answers = mysql.select(Answers, Answers.qid == question.qid)
-    for answer in answers:
-        answer.uname = mysql.select(Users, Users.uid == answer.uid)[0].name
+    try:
+        question = mysql.select(Questions, Questions.qid == qid)[0]
+        question.uname = mysql.select(Users, Users.uid == question.uid)[0].name
+        answers = mysql.select(Answers, Answers.qid == question.qid)
+        for answer in answers:
+            answer.uname = mysql.select(Users, Users.uid == answer.uid)[0].name
+    except Exception:
+        return render_template("error.html")
     return render_template('yy_details.html', question=question, answers=answers)
 
 # 发表回答的界面
