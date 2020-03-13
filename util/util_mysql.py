@@ -15,7 +15,8 @@ Base = declarative_base()
 # engine = None
 # Session = None
 # session = None
-labels = ["1", "2", "3", "4", "5"]
+labels = ["xuexi", "huodong", "xunwu", "chushou", "qiugou", "huzhu", "zhaopin"]
+# "学习交流", "活动通知", "寻物招领", "二手出售", "二手求购", "互助问答", "招聘求职"
 
 
 class Users(UserMixin, Base):
@@ -49,6 +50,9 @@ class UserCounts(Base):
     total_count = Column(String(100), default=",".join(list))  # 整体创作量，对应每个label，用逗号隔开
     recent_count = Column(String(100), default=",".join(list))  # 近期创作量，对应每个label，用逗号隔开
     recent_qid = Column(LONGTEXT, default="")  # 近期创作的问题，若干个用逗号连接的qid字符串
+    total_count_2 = Column(String(100), default=",".join(list))  # 整体浏览量
+    recent_count_2 = Column(String(100), default=",".join(list))  # 近期浏览量
+    recent_qid_2 = Column(LONGTEXT, default="")  # 近期浏览的问题
 
     def __str__(self):
         return self.uid + " -- " + self.total_count + " / " + self.recent_count\

@@ -18,7 +18,7 @@ def recom_qid(args, mysql, user=None):
 
     # 最后的总得分
     score = {q.qid: 0 for q in ques}
-    s = [{} for _ in range(5)]
+    s = [{q.qid: 0 for q in ques} for _ in range(5)]
 
     if user is not None:
         usercount = mysql.select(UserCounts, UserCounts.uid == user.uid)[0]  # 该用户统计情况
@@ -29,32 +29,41 @@ def recom_qid(args, mysql, user=None):
         # print(s[0]])
 
         # 用户整体浏览情况
-        total_count = usercount.total_count.split(',')
-        temp = {}
+        total_count_1 = usercount.total_count.split(',')
+        total_count_2 = usercount.total_count_2.split(',')
+        temp1 = {}
+        temp2 = {}
         for i in range(len(labels)):
-            temp[labels[i]] = int(total_count[i])
-        max_ = max(temp.values())
-        s[1] = {q.qid: temp[q.label] / max_ for q in ques}
+            temp1[labels[i]] = int(total_count_1[i])
+            temp2[labels[i]] = int(total_count_2[i])
+        max_1 = max(temp1.values())
+        max_2 = max(temp2.values())
+        temp = {l: temp1[l] / max_1 * 2/3 + temp2[l] / max_2 * 1/3 for l in labels}
+        s[1] = {q.qid: temp[q.label] for q in ques}
         # print(s[1])
 
-        # 用户近期100条浏览情况，同类提高，本问题减少
-        recent_count = usercount.recent_count.split(',')
-        temp = {}
+        # 用户近期浏览情况，同类提高，本问题减少
+        recent_count_1 = usercount.recent_count.split(',')
+        recent_count_2 = usercount.recent_count_2.split(',')
+        temp1 = {}
+        temp2 = {}
         for i in range(len(labels)):
-            temp[labels[i]] = int(recent_count[i])
-        max_ = max(temp.values())
-        s[2] = {q.qid: temp[q.label] / max_ for q in ques}
+            temp1[labels[i]] = int(recent_count_1[i])
+            temp2[labels[i]] = int(recent_count_2[i])
+        max_1 = max(temp1.values())
+        max_2 = max(temp2.values())
+        temp = {l: temp1[l] / max_1 * 2/3 + temp2[l] / max_2 * 1/3 for l in labels}
+        s[2] = {q.qid: temp[q.label] for q in ques}
 
-        recent_qid = usercount.recent_qid.split(',')
-        max_ = len(recent_qid)
-        for i in range(max_):
-            s[2][recent_qid[i]] = -(1 + i) / max_
+        recent_qid_1 = usercount.recent_qid.split(',')
+        recent_qid_2 = usercount.recent_qid_2.split(',')
+        max_1 = len(recent_qid_1)
+        max_2 = len(recent_qid_2)
+        for i in range(1, max_1 + 1):
+            s[2][recent_qid_1[i]] -= i / max_1 * 2/3
+        for i in range(1, max_2 + 1):
+            s[2][recent_qid_2[i]] -= i / max_2 * 1/3
         # print(s[2])
-
-    else:
-        s[0] = {q.qid: 0 for q in ques}
-        s[1] = {q.qid: 0 for q in ques}
-        s[2] = {q.qid: 0 for q in ques}
 
     # 问题本身质量
     collect = {q.qid: q.ques_collect for q in ques}
