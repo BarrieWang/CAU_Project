@@ -12,7 +12,6 @@ def checkuser(username, password, db):
     """
     ret = db.select(Users, Users.name == username)
     # ret=db.select_mysql(sql="select * from user where name = '"+username+"'")
-
     if ret is False:
         return 0
     elif check_password_hash(ret[0].passwd, password) is False:
@@ -55,7 +54,7 @@ def checkregister(username, password, repeatpasswd, useremail, db):
         userid = str(max(idlist)+1)
         hashpasswd = generate_password_hash(password)
         print(len(hashpasswd), hashpasswd)
-        userobj = Users(uid=userid, name=username, passwd=hashpasswd, email=useremail, authorization='1')
+        userobj = Users(uid=userid, name=username, passwd=hashpasswd, email=useremail, authorization='0')
         db.insert(userobj)
 
         return userid

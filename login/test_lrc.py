@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, flash, session
 from login.Login import *
+from login.UserInformation import *
+from login.Email import *
 from util.util_mysql import *
 from util.util_logging import *
 from util.util_parameter import *
@@ -19,7 +21,10 @@ def index():
     global db
     db = UtilMysql(parameter.get_config("mysql"), logger)
     pass
-    return render_template("register.html", result=4)
+    sep = '/'
+    user = get_user('20160001', db)
+    src = get_avatar('20160001')
+    return render_template("userinformation.html", src=src, user=user)
 
 
 @app.route('/helloworld')
@@ -52,6 +57,7 @@ def log_in():
         username = request.form.get('username')
         password = request.form.get('password')
         result = checkuser(username, password, db)
+        print(result)
         if(result == 0 or result == 1):
             return render_template("login.html", result=result)
         else:
@@ -94,6 +100,25 @@ def choose_interest():
     if storeinterest(interest, session.get('userid'), db):
         return render_template("helloworld.html")
 
+
+@app.route('/ChangeAvatar', methods=['POST'])
+def changeavatar():
+    # uid = current_user.uid
+    uid = '20160001'
+    user = get_user(uid, db)
+    file = request.files.get('uploaded_file')
+    result = changeimage(uid, file)
+    src = get_avatar(uid)
+    print(result)
+    return render_template('userinformation.html',user=user, src=src )
+
+
+@app.route('/SendCaptcha', methods=['GET', 'POST'])
+def sendcaptcha():
+    # email = request.form.get('email')
+    email = '15601127705@163.com'
+    captcha = sendemail(email, app)
+    return render_template('emailtest.html')
 
 if __name__ == "__main__":
     app.run(debug=True)
