@@ -59,10 +59,10 @@ def recom_qid(args, mysql, user=None):
         recent_qid_2 = usercount.recent_qid_2.split(',')
         max_1 = len(recent_qid_1)
         max_2 = len(recent_qid_2)
-        for i in range(1, max_1 + 1):
-            s[2][recent_qid_1[i]] -= i / max_1 * 2/3
-        for i in range(1, max_2 + 1):
-            s[2][recent_qid_2[i]] -= i / max_2 * 1/3
+        for i in range(max_1):
+            s[2][recent_qid_1[i]] -= (i + 1) / max_1 * 2/3
+        for i in range(max_2):
+            s[2][recent_qid_2[i]] -= (i + 1) / max_2 * 1/3
         # print(s[2])
 
     # 问题本身质量
