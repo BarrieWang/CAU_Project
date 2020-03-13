@@ -31,6 +31,7 @@ class Users(UserMixin, Base):
     email = Column(String(100), unique=True)
     labelset = Column(String(300), default="")  # 用户偏好，若干个用逗号连接的label字符串
     regtime = Column(DateTime, default=datetime.datetime.now)  # 不能加括号，加了括号，以后永远是当前时间
+    authorization = Column(String(5), nullable=False)
 
     def __str__(self):
         return self.uid + " -- " + self.name + " : " + self.passwd + " -- " + str(self.regtime)
