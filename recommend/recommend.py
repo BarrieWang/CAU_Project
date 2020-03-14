@@ -37,7 +37,9 @@ def recom_qid(args, mysql, user=None):
             temp1[labels[i]] = int(total_count_1[i])
             temp2[labels[i]] = int(total_count_2[i])
         max_1 = max(temp1.values())
+        max_1 = 1 if max_1 == 0 else max_1
         max_2 = max(temp2.values())
+        max_2 = 1 if max_2 == 0 else max_2
         temp = {l: temp1[l] / max_1 * 2/3 + temp2[l] / max_2 * 1/3 for l in labels}
         s[1] = {q.qid: temp[q.label] for q in ques}
         # print(s[1])
@@ -51,7 +53,9 @@ def recom_qid(args, mysql, user=None):
             temp1[labels[i]] = int(recent_count_1[i])
             temp2[labels[i]] = int(recent_count_2[i])
         max_1 = max(temp1.values())
+        max_1 = 1 if max_1 == 0 else max_1
         max_2 = max(temp2.values())
+        max_2 = 1 if max_2 == 0 else max_2
         temp = {l: temp1[l] / max_1 * 2/3 + temp2[l] / max_2 * 1/3 for l in labels}
         s[2] = {q.qid: temp[q.label] for q in ques}
 
@@ -60,9 +64,11 @@ def recom_qid(args, mysql, user=None):
         max_1 = len(recent_qid_1)
         max_2 = len(recent_qid_2)
         for i in range(max_1):
-            s[2][recent_qid_1[i]] -= (i + 1) / max_1 * 2/3
+            if recent_qid_1[i] != "":
+                s[2][recent_qid_1[i]] -= (i + 1) / max_1 * 2/3
         for i in range(max_2):
-            s[2][recent_qid_2[i]] -= (i + 1) / max_2 * 1/3
+            if recent_qid_2[i] != "":
+                s[2][recent_qid_2[i]] -= (i + 1) / max_2 * 1/3
         # print(s[2])
 
     # 问题本身质量
