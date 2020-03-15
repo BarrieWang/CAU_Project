@@ -1,0 +1,66 @@
+body{
+    padding-top: 30px;
+}
+#navbar-brand {
+    font-family: 'STSong';
+    font-size: 20px;
+    color: white;
+}
+.brand-image {
+    height: 100px;
+    width: 100px;
+}
+#nav {
+    background-color: rgb(39, 38, 54);
+}
+.user-link {
+    position: absolute;
+    top:15px;
+    right:70px;
+    font-size: 15px;
+    color: white;
+    font-family: 'STSong';
+}
+.user-link-content {
+    font-size: 15px;
+    color: white;
+    font-family: 'STSong';
+}
+.user-link-content:visited {
+    font-size: 15px;
+    color: white;
+    font-family: 'STSong';
+}
+.user-link-content:active {
+    font-size: 15px;
+    color: white;
+    font-family: 'STSong';
+}
+.user-link-content:hover {
+    font-size: 15px;
+    color: white;
+    font-family: 'STSong';
+}
+form.navbar-form.navbar-left {
+    padding-left: 50px;
+    padding-right: 50px;
+}
+#nav-searchbtn {
+    font-family: "楷体","楷体_GB2312";
+    font-size: 17px;
+    padding: 4px 12px;
+    border-radius: 2px;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+    border-left-color: rgba(0, 0, 0, 0);
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+#nav-searchinput {
+    border-radius: 2px;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    border-right-color: rgba(0, 0, 0, 0);
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}

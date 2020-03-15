@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ current_user.name }}{% endblock %}
+
+{% block head %}
+    <link href="{{ url_for('static',filename = 'css/userstyle.css') }}" rel="stylesheet" type='text/css' media="all"/>
+{% endblock %}
+
+{% block main %}
+    <div id="user">
+        <img id="user-avatar" src="{{ avatar }}" alt="头像">
+        <div id="user-info">
+            <h2 id="user-name">{{ current_user.name }}</h2>
+            <div class="user-labels">
+                <p class="user-label">兴趣标签1</p>
+                <!-- <p class="user-label">兴趣标签2</p>
+                <p class="user-label">兴趣标签3</p> -->
+                <div class="clear"></div>
+            </div>
+            <!-- <div class="user-labels">
+                <p class="user-label">兴趣标签4</p>
+                <p class="user-label">兴趣标签5</p>
+                <p class="user-label">兴趣标签6</p>
+                <div class="clear"></div>
+            </div>
+            <div class="user-labels">
+                <p class="user-label">兴趣标签7</p>
+                <div class="clear"></div>
+            </div> -->
+            <div class="clear"></div>
+        </div>
+        <div id="user-change-avatar">
+            <input type="button" value="修改头像" data-toggle="modal" data-target="#myModal">
+        </div>
+        <div class="clear"></div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">修改头像</h4>
+            </div>
+            <form id="avatar-form" action="{{ url_for('avatar_api') }}" method="POST" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="avatar-file">上传文件</label>
+                        <input type="file" name="avatar-file" id="avatar-file">
+                        <p class="help-block">支持格式：PNG，JPG，JPEG，GIF</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-primary" style="background-color: rgb(39, 38, 54); border-color: rgb(39, 38, 54);">提交</button>
+                </div>
+            </form>
+        </div>
+        </div>
+    </div>
+    <div id="user-tab">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" id="user-nav-tab" role="tablist">
+            <li role="presentation" class="active"><a href="#user-question" aria-controls="user-ask" role="tab" data-toggle="tab">我的提问</a></li>
+            <li role="presentation"><a href="#user-answer" aria-controls="user-answer" role="tab" data-toggle="tab">我的回答</a></li>
+            <li role="presentation"><a href="#like-question" aria-controls="user-like" role="tab" data-toggle="tab">收藏的提问</a></li>
+            <li role="presentation"><a href="#like-answer" aria-controls="user-like" role="tab" data-toggle="tab">收藏的回答</a></li>
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade in active" id="user-question">
+                {% if questions != None %}
+                    {% for question in questions %}
+                        <div class="list myq">
+                            <a href="{{ url_for('details', qid=question.qid) }}">{{ question.ques_title }}</a>
+                            <p class="c-count">{{ question.ques_collect}} 人收藏了此问题</p>
+                            <p>{{ question.ques_content }}</p>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty">
+                        <p>您还没有提出过问题哦~</p>
+                    </div>
+                {% endif %}
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="user-answer">
+                {% if answers != None %}
+                    {% for answer in answers %}
+                        <div class="list mya">
+                            <a href="{{ url_for('details', qid=answer.qid) }}">{{ answer.ques_title }}</a>
+                            <p class="c-count">{{ answer.ans_collect}} 人收藏了此回答</p>
+                            <p>{{ answer.ans_content }}</p>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty">
+                        <p>您还没有回答过问题哦~</p>
+                    </div>
+                {% endif %}
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="like-question">
+                {% if cllectq != None %}
+                    {% for question in collectq %}
+                        <div class="list likeq">
+                            <a href="{{ url_for('details', qid=question.qid) }}">{{ question.ques_title }}</a>
+                            <p class="c-count">{{ question.ques_collect}} 人收藏了此问题</p>
+                            <p>{{ question.ques_content }}</p>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty">
+                        <p>您还没有收藏问题哦~</p>
+                    </div>
+                {% endif %}
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="like-answer">
+                {% if cllecta != None %}
+                    {% for answer in collecta %}
+                        <div class="list likea">
+                            <a href="{{ url_for('details', qid=answer.qid) }}">{{ answer.ques_title }}</a>
+                            <p class="c-count">{{ answer.ans_collect}} 人收藏了此回答</p>
+                            <p>{{ answer.ans_content }}</p>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty">
+                        <p>您还没有收藏回答哦~</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>  
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="https://cdn.bootcss.com/jquery.form/4.2.2/jquery.form.min.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $("#avatar-form").ajaxForm(function(data){
+            if(data == "-1"){
+                alert("未上传图片");
+            }
+            if(data == "0"){
+                alert("图片格式不支持");
+            }
+            if(data == "1"){
+                location.reload();
+            }
+        })
+    })
+    </script>
+{% endblock %}

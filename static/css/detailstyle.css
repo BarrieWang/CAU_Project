@@ -1,8 +1,9 @@
 .main{
-    background: powderblue;
+    background: white;
     width: 730px;
     margin: 0 auto;
     overflow: hidden;
+    margin-top: 50px;
 }
 body{
     background: aliceblue;
@@ -32,7 +33,7 @@ h4{
 .form-group{
     margin: 0 30px;
 }
-ul li{
+.answers li{
     list-style: none;
     border-bottom: 1px black;
     padding-top: 10px;

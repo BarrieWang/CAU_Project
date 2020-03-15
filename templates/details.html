@@ -1,27 +1,33 @@
-{% extends 'yy_base.html' %}
+{% extends 'base.html' %}
 
-{% block title %}details{% endblock %}
+{% block title %}问题详情{% endblock %}
 
 {% block head %}
-    <link rel="stylesheet" href="{{ url_for('static',filename = 'css/detail.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename = 'css/detailstyle.css') }}">
 {% endblock %}
 
 {% block main %}
     <h3 class="page_title">{{ question.ques_title }}</h3>
     <p class="question-info">
-        <span class="question-info-author">{{ '作者: %s' % question.getuname() }}</span>
+        <span class="question-info-author">
+            {% if question.uid == current_user.uid %}
+                {% if question.ques_anonymous %}
+                    作者: 我（匿名提问）
+                {% else %}
+                    作者: 我
+                {% endif %}
+            {% elif question.ques_anonymous %}
+                作者: 匿名用户
+            {% else %}
+                {{ '作者: %s' % question.uname }}
+            {% endif %}
+        </span>
         <span class="question-info-time">{{ '时间: %s' % question.ques_time }}</span>
+        <button class="like" id="like{{ question.qid }}">收藏</button>
+        {% if question.uid == current_user.uid %}
+            <button class="delete" id="delete{{ question.qid }}">删除</button>
+        {% endif %}
     </p>
-{#    <form action="{{ url_for('upgrade',question_id=question.id) }}">#}
-{#      <div class="form-group">#}
-{#            <input type="hidden" name="question_id" value = '{{ question.id }}'>#}
-{#        </div>#}
- {#         <div class="form-group" style="text-align: right">#}
-{#             <button class="btn btn-primary">#}
-{#              收藏{{ question.like_count }}#}
-{#            </button>#}
-     {#     </div>#}
-  {#  </form>#}
     <hr>
     <div class="question-content-container">
         <p class="question-content">
@@ -31,32 +37,202 @@
 
     <hr>
     <h4>回答：</h4>
-    <form action="{{ url_for('add_answer')+'?source='+question.qid }}" method="post">
-        <div class="form-group">
-            <input type="text" class="form-control" placeholder="请发表回答" name="ans_content">
-            <input type="hidden" name="qid" value = '{{ question.qid }}'>
-        </div>
-        <div class="form-group" style="text-align: right">
-            <button class="btn btn-primary">
-                发布
-            </button>
-        </div>
-        <hr>
-    <ul>
-            {% for answer in answers %}
-            <li>
-                <div class="user-info">
-                    <img class="avatar" src="{{ url_for('static',filename = 'images/timg.jpeg') }}" alt="头像">
-                    <span class="name">{{ answer.getuname() }}</span>
-                    <span class="ans_time">{{ answer.ans_time }}</span>
+    <div class="form-group">
+        <input type="text" class="form-control" placeholder="请发表回答" id="ans_content">
+    </div>
+    <div class="form-group" style="text-align: right">
+        <input id="anonymous" type="checkbox" class="checked">
+        <span class="span">匿名发布</span>
+        <button id="answer-btn" class="btn btn-primary">
+            发布
+        </button>
+    </div>
+    <hr>
+    <ul class="answers">
+        {% for answer in answers %}
+        <li>
+            <div class="user-info">
+                <div class="avatar-group">
+                    {% if not question.ques_anonymous %}
+                        <img class="avatar" src="{{ answer.uavatar }}" alt="头像">
+                    {% else %}
+                        <img class="avatar" src="{{ url_for('static',filename = 'images/timg.jpeg') }}" alt="头像">
+                    {% endif %}
                 </div>
-                <p class="answer-content">
-                    {{ answer.ans_content }}
-                </p>
-            </li>
-            <hr>
+                <span class="name">
+                    {% if answer.uid == current_user.uid %}
+                        {% if answer.ans_anonymous %}
+                            我（匿名回答）
+                        {% else %}
+                            我
+                        {% endif %}
+                    {% elif answer.ans_anonymous %}
+                        匿名用户
+                    {% else %}
+                        {{ answer.uname }}
+                    {% endif %}
+                </span>
+                <span class="ans_time">{{ answer.ans_time }}</span>
+                <button class="like" id="like{{ answer.aid }}">收藏</button>
+                {% if answer.uid == current_user.uid %}
+                    <button class="update" id="update{{ answer.aid }}">修改</button>
+                    <button class="delete" id="delete{{ answer.aid }}">删除</button>
+                {% endif %}
+            </div>
+            <p class="answer-content" id="content{{ answer.aid }}">
+                {{ answer.ans_content }}
+            </p>
+            {% if answer.uid == current_user.uid %}
+            <div id="updateform{{ answer.aid }}" class="form-group" style="text-align: right; display: none;">
+                <input type="text" class="update-content form-control" placeholder="请发表回答" value="{{ answer.ans_content }}">
+                <input type="checkbox" class="update-anonymous checked">
+                <span class="span">匿名发布</span>
+                <button id="updatesubmit{{ answer.aid }}" class="updatesubmit btn btn-primary">修改</button>
+            </div>
+            {% endif %}
+        </li>
+        <hr>
         {% endfor %}
-
     </ul>
-    </form>
 {% endblock  %}
+
+{% block script %}
+    <script>
+        $(".like").each(function(){
+            var button = $(this);
+            var id = $(this).prop("id").substring(4);
+            $.post("{{ url_for('collect_api') }}", {"id": id, "query": true}, function(data){
+                if(data == "Duplicate"){
+                    button.html("已收藏");
+                }
+                else{
+                    button.html("收藏");
+                }
+            })
+        })
+    </script>
+    <script>
+        $(".like").on("click", function(){
+            var button = $(this);
+            var id = $(this).prop("id").substring(4);
+            $.post("{{ url_for('collect_api') }}", {"id": id, "query": true}, function(data){
+                if(data == "Duplicate"){
+                    $.post("{{ url_for('cancel_collect_api') }}", {"id": id}, function(data){
+                        if(data == "Error"){
+                            alert("数据库出错，请稍后再试。");
+                        }
+                        else if(data == "OK"){
+                            button.html("收藏");
+                        }
+                        else if(data == "Not"){
+                            alert("重复操作。");
+                        }
+                        else{
+                            location.href = "{{ url_for('login') }}";
+                        }
+                    }) 
+                }
+                else{
+                    $.post("{{ url_for('collect_api') }}", {"id": id, "query": false}, function(data){
+                        if(data == "Error"){
+                            alert("数据库出错，请稍后再试。");
+                        }
+                        else if(data == "OK"){
+                            location.reload();
+                        }
+                        else if(data == "Duplicate"){
+                            button.html("已收藏");
+                        }
+                        else{
+                            location.href = "{{ url_for('login') }}";
+                        }
+                    }) 
+                }
+            })
+        })
+    </script>
+    <script>
+        $("#answer-btn").on("click", function(){
+            var patt = /^[ ]+$/;
+            if(patt.test($("#ans_content").val()) || $("#ans_content").val() == ""){
+                alert("回答不能为空！");
+            }
+            else{
+                $.post("{{ url_for('answer_api') }}", {qid: "{{ question.qid }}",
+                content: $("#ans_content").val(), anonymous: $("#anonymous").prop("checked")}, function(data){
+                    if(data == "OK"){
+                        location.reload();
+                    }
+                    else if(data == "Error"){
+                        alert("数据库出错，请稍后再试。");
+                    }
+                    else{
+                        location.href = "{{ url_for('login') }}";
+                    }
+                }) 
+            }
+        })
+    </script>
+    <script>
+        $(".delete").on("click", function(){
+            var id = $(this).prop("id").substring(6);
+            $.post("{{ url_for('delete_api') }}", {"id": id}, function(data){
+                if(data == "Error"){
+                    alert("数据库出错，请稍后再试。");
+                }
+                else if(data == "AnsDel"){
+                    location.reload();
+                }
+                else if(data == "QuesDel"){
+                    location.href = "{{ url_for('recommend') }}";
+                }
+                else{
+                    location.href = "{{ url_for('login') }}";
+                }
+            }) 
+        })
+    </script>
+    <script>
+        $(".update").on("click", function(){
+            var id = $(this).prop("id").substring(6);
+            if($(this).html() == "修改"){
+                $("#content"+id).css("display", "none");
+                $("#updateform"+id).css("display", "");
+                $(this).html("取消");
+            }
+            else if($(this).html() == "取消"){
+                $("#content"+id).css("display", "");
+                $("#updateform"+id).css("display", "none");
+                $(this).html("修改");
+            }
+        })
+    </script>
+    <script>
+        $(".updatesubmit").on("click", function(){
+            var id = $(this).prop("id").substring(12);
+            var content = $("#updateform"+id+" .update-content").val();
+            var anonymous = $("#updateform"+id+" .update-anonymous").prop("checked");
+            var patt = /^[ ]+$/;
+            if(patt.test(content) || content == ""){
+                alert("回答不能为空！");
+            }
+            else{
+                $.post("{{ url_for('update_answer_api') }}", {"aid": id, "content": content,
+                "anonymous": anonymous}, function(data){
+                    if(data == "OK"){
+                        location.reload();
+                    }
+                    else if(data == "NoAuth"){
+                        alert("您无权更改此回答。");
+                    }
+                    else if(data == "Error"){
+                        alert("数据库出错，请稍后再试。");
+                    }
+                    else{
+                        location.href = "{{ url_for('login') }}";
+                    }
+                })
+            }
+        })
+    </script>
+{% endblock %}
