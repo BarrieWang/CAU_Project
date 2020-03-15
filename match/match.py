@@ -4,13 +4,10 @@ from util.util_mysql import Questions
 from match.soundshapecode.ssc_similarity.compute_ssc_similarity import compute_ssc_similaruty
 from match.soundshapecode.variant_kmp import VatiantKMP
 from match.soundshapecode.ssc import *
-from classifier.classifier import *
+# from classify.classify import Classifier
 
 
 class Matcher:
-    """
-    匹配工具对象
-    """
 
     def __init__(self, args):
 
@@ -58,15 +55,16 @@ class Matcher:
             conf.append(temp)
         return sum(conf) / len(conf)
 
-    def find(self, target, mysql):
+    def find(self, target, mysql, classifier):
         """
         对指定字符串进行查找与匹配
         :param target: 目标字符串
         :param mysql: 数据库连接器对象
+        :param classifier: 分类器对象
         :return: 查找结果，list of qid
         """
 
-        temp = mysql.select(Questions, Questions.label == get_label(target))
+        temp = mysql.select(Questions, Questions.label == classifier.get_label(target))
         words = jieba.cut(target)
         result = {t.qid: self.sent_similarity(words, t.ques_title) for t in temp}
         result = sorted(result.items(), key=lambda kv: kv[1], reverse=True)
@@ -76,6 +74,7 @@ class Matcher:
             return [id_ for id_, _ in result]
         else:
             return [id_ for id_, _ in result[:self.MAX_NUM]]
+
 
 '''
 import numpy as np
