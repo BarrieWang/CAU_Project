@@ -1,3 +1,9 @@
+"""
+author: 汪宝瑞
+create time: 2020-03-06
+update time: 2020-03-13
+"""
+
 import random
 from util.util_mysql import UserCounts, Questions, labels
 # from util.util_mysql import UtilMysql as UMysql

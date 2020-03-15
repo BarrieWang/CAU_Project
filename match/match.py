@@ -1,3 +1,9 @@
+"""
+author: 汪宝瑞
+create time: 2020-03-04
+update time: 2020-03-12
+"""
+
 import re
 import jieba
 import numpy as np

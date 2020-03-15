@@ -1,3 +1,9 @@
+"""
+author: 汪宝瑞
+create time: 2020-03-11
+update time: 2020-03-12
+"""
+
 from pypinyin import pinyin, lazy_pinyin, Style
 import pypinyin
 import pkg_resources
