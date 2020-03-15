@@ -1,4 +1,6 @@
+import re
 import jieba
+import numpy as np
 from util.util_mysql import Questions
 # from util.util_mysql import UtilMysql as UMysql
 from match.soundshapecode.ssc_similarity.compute_ssc_similarity import compute_ssc_similaruty
@@ -41,7 +43,7 @@ class Matcher:
             for j in range(len(wordc)):
                 conf.append(compute_ssc_similaruty(wordc[j], str_c[i + j], self.SSC_ENCODE_WAY))
             confidence = max(confidence, sum(conf))
-        return confidence / len(wordc)
+        return confidence / len(wordc) if len(wordc) > 0 else 0
 
     def sent_similarity(self, words, str_):
         """
@@ -49,11 +51,22 @@ class Matcher:
         """
 
         conf = []
+        str1 = ''.join(re.findall('[\u4e00-\u9fa5]', str_))  # 汉字部分
+        str2 = ''.join(re.findall('[0-9a-zA-Z]', str_))  # 字母数字符号部分
         for word in words:
-            temp = self.word_similarity(word, str_)
+            word = ''.join(re.findall('[0-9a-zA-Z\u4e00-\u9fa5]', word))
+            if ''.join(re.findall('[0-9a-zA-Z]', word)) == '':
+                temp = self.word_similarity(word, str1)
+            else:
+                list_ = [
+                    suitability(word, str2[start: start + len(word)])
+                    for start in range(len(str2) - len(word) + 1)
+                ]
+                list_.append(suitability(word, str2))
+                temp = max(list_)
             # print(temp)
             conf.append(temp)
-        return sum(conf) / len(conf)
+        return sum(conf) / len(conf) if len(conf) > 0 else 0
 
     def find(self, target, mysql, classifier):
         """
@@ -76,10 +89,6 @@ class Matcher:
             return [id_ for id_, _ in result[:self.MAX_NUM]]
 
 
-'''
-import numpy as np
-
-
 def suitability(str1, str2):
     """
     计算两个字符串的编辑距离
@@ -98,5 +107,7 @@ def suitability(str1, str2):
             delta = 0 if str1[i - 1] == str2[j - 1] else 1
             dis[i][j] = min(dis[i - 1][j - 1] + delta, min(dis[i - 1][j] + 1, dis[i][j - 1] + 1))
 
-    return 1 - dis[len1][len2]/max(len1, len2)
-'''
+    if len1 > 0 or len2 > 0:
+        return 1 - dis[len1][len2] / max(len1, len2)
+    else:
+        return 0
