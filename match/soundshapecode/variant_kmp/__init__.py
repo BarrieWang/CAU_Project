@@ -1,3 +1,9 @@
+"""
+author: 汪宝瑞
+create time: 2020-03-10
+update time: 2020-03-12
+"""
+
 from match.soundshapecode.ssc_similarity.compute_ssc_similarity import compute_ssc_similaruty
 
 

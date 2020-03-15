@@ -1,5 +1,10 @@
-from match.soundshapecode import ssc
+"""
+author: 汪宝瑞
+create time: 2020-03-11
+update time: 2020-03-12
+"""
 
+from match.soundshapecode import ssc
 from match.soundshapecode.variant_kmp import VatiantKMP
 
 SIMILARITY_THRESHOLD = 0.8
