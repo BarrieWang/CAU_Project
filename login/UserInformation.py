@@ -1,6 +1,9 @@
+"""
+author: 李润超
+create time: 2020-03-10
+update time: 2020-03-12
+"""
 from util.util_mysql import *
-from util.util_mysql import Users
-from flask import url_for
 import os
 
 
@@ -21,15 +24,23 @@ def get_avatar(uid):
     :param uid: 用户id
     :return: 用户头像地址
     """
-    pathstr = "."+url_for("static", filename="images")
+
+    sep = '\\'   # 玮韬，linux里这里要改成'/'
+
+    path = os.path.dirname(os.path.realpath(__file__)).split(sep)
+    path.pop()
+    pathstr = str()
+    for i in range(len(path)):
+        pathstr = pathstr + path[i] + sep
+    pathstr += 'static' + sep + 'images' + sep
     for i in os.listdir(pathstr):
         if i.split('.')[0] == uid:
             break
     if i.split('.')[0] == uid:
-        pathstr = url_for("static", filename="images/"+i)
+        pathstr = sep + 'static' + sep + 'images' + sep + i
         return pathstr
     else:
-        pathstr = url_for("static", filename="images/timg.jpeg")    # 返回默认头像
+        pathstr = sep + 'static' + sep + 'images' + sep + 'avatar.jpg'    # 返回默认头像
         return pathstr
 
 
@@ -44,17 +55,24 @@ def changeimage(uid, f):
     allowed_extensions = ['png', 'jpg', 'jpeg', 'gif']
     # 后缀名
     if f is None:
-        return "-1"
+        return -1
     else:
         ext = f.filename
         fext = ext.split('.')[1]
         if fext not in allowed_extensions:
-            return "0"
+            return 0
         else:
-            pathstr = "." + url_for("static", filename="images") + '/'
+            sep = '\\'         # 玮韬，linux里这里要改成'/'
+            path = os.path.dirname(os.path.realpath(__file__)).split(sep)
+            path.pop()
+            pathstr = str()
+            for i in range(len(path)):
+                pathstr = pathstr + path[i] + sep
+            pathstr += sep + 'static' + sep + 'images' + sep
             for i in os.listdir(pathstr):
+                print(i)
                 if i.split('.')[0] == uid:
                     os.remove(pathstr + i)
             newpath = pathstr + uid + '.' + fext
             f.save(newpath)
-            return "1"
+            return 1

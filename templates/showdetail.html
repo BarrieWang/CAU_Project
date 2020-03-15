@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>问题详情</title>
+</head>
+<body>
+<h2 align="center">Truth needs no color, with his color fixed</h2>
+<table border="1" align="center">
+        <tr>
+            <th>问题ID</th>
+            <th>用户ID</th>
+            <th>问题所属类别</th>
+            <th>问题内容</th>
+            <th>提问时间</th>
+            <th>问题收藏量</th>
+        </tr>
+        <tr>
+            <td>{{ ques.qid }}</td>
+            <td>{{ ques.uid }}</td>
+            <td>{{ ques.label }}</td>
+            <td>{{ ques.ques_title }}</td>
+            <td>{{ ques.ques_content }}</td>
+            <td>{{ ques.ques_time }}</td>
+             <td>{{ ques.ques_collect }}</td>
+             <td><a href="/toupdatq/{{ ques.qid }}"><button>修改</button></a></td>
+             <td><a href="/tocollectq/{{ ques.qid }}"><button>收藏</button></a></td>
+             <td><a href="/todeletq/{{ ques.qid }}"><button>删除</button></a></td>
+        </tr>
+</table>
+<br><br><br>
+<table border="1" align="center">
+    <tr>
+        <th>回答ID</th>
+        <th>回答用户ID</th>
+        <th>问题ID</th>
+        <th>回答内容</th>
+        <th>回答时间</th>
+        <th>回答收藏量</th>
+    </tr>
+    {% for i in ans %}
+    <tr>
+        <td>{{ i.aid }}</td>
+        <td>{{ i.uid }}</td>
+        <td>{{ i.qid }}</td>
+        <td>{{ i.ans_content }}</td>
+        <td>{{ i.ans_time }}</td>
+        <td>{{ i.ans_collect }}</td>
+        <td><a href="/toupdata/{{ i.aid }}"><button>修改</button></a></td>
+        <td><a href="/tocollecta/{{ i.aid }}"><button>收藏</button></a></td>
+        <td><a href="/todeleta/{{ i.aid }}"><button>删除</button></a></td>
+    </tr>
+    {% endfor %}
+</table>
+<div align="center">
+    <form action="/answered" method="get">
+        <p>
+            Answer it!
+        </p>
+        <input type="hidden" name="qid" value={{ ques.qid }}>
+        <textarea rows="10" cols="50" placeholder="Give your bright." name="acontent"></textarea>
+        <span id="sp"></span>
+        <br><br><br>
+        <label><input type="checkbox" name="noname">匿名回答</label>
+        <br><br><br>
+        <input type="submit" value="Submit">
+        &nbsp;&nbsp;
+        <input type="reset" value="Reset">
+    </form>
+</div>
+</body>
+</html>
