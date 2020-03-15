@@ -1,17 +1,18 @@
 .main{
-    background: powderblue;
+    background: white;
     width: 730px;
     margin: 0 auto;
     overflow: hidden;
+    margin-top: 50px;
 }
 body{
     background: aliceblue;
 }
-ul{
+.main ul{
     list-style: none;
     padding: 0px;
 }
-ul li{
+.main ul li{
     border-bottom: 1px solid black;
     overflow: hidden;
     padding: 0 1px;
@@ -59,14 +60,24 @@ ul li{
 }
 .answer-num{
     position: absolute;
-    top: 75px;
+    top: 60px;
     left: 0;
 }
-/*.see-num{*/
-/*    position: absolute;*/
-/*    top: 75px;*/
-/*    left: 50px;*/
-/*}*/
+.see-num{
+    position: absolute;
+    top: 60px;
+    left: 50px;
+}
+.like{
+    position: absolute;
+    top: 57px;
+    left: 120px;
+}
+.question-label {
+    position: absolute;
+    top: 60px;
+    left: 190px;
+}
 /*.to-answer{*/
 /*    position: absolute;*/
 /*    top: 75px;*/

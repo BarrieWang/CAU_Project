@@ -1,47 +1,120 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
-    <title>Login</title>
-</head>
-<body>
-    <div align="center">
-        <h1>User Register</h1>
-        <fieldset>
-            <form method="post" action="UserRegister">
-                <input type="text" placeholder="用户名" name="username"/>
-                <br/><a id="usernametext"></a><br/>
-                <input type="password" placeholder="密码" name="password"/>
-                <br/><br/>
-                <input type="password" placeholder="重复密码" name="repeat"/>
-                <br/><a id="repeatpasswdtext"></a><br/>
-                <input type="text" placeholder="邮箱" name="email"/>
-                <br/><a id="emailtext"></a><br/>
-                <input type="submit" name="submit" value="Submit" />
+<html lang="zh-CN">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>注册 - 无问西东</title>
+        <link href="//fonts.googleapis.com/css?family=Montserrat:300,400,500,600" rel="stylesheet">
+        <link href="static/css/loginstyle.css" rel="stylesheet" type='text/css' media="all"/>
+    </head>
+	<body>
+        <div class="placeholder"></div>
+        <div class="main">
+            <div class="its-sign-in">
+                <h2>注册</h2>
+            </div>
+            <form id="regform" action="api/register" method="post">
+                <div class="form-left-w3l">
+                    <input id="name" name="name" type="text" placeholder="Username" required="" autocomplete='new-password'>
+                </div>
+                <div class="form-left-w3l">
+                    <input id="password" name="password" type="password" placeholder="Password" required="" autocomplete="new-password">
+                </div>
+                <div class="form-left-w3l">
+                    <input id="repeat" name="repeat" type="password" placeholder="Repeat Password" required="" autocomplete="new-password">
+                </div>
+                <div class="form-left-w3l">
+                    <input id="email" name="email" type="email" placeholder="E-mail" required="" autocomplete="new-password">
+                </div>
+                <div class="form-left-w3l">
+                    <input id="captcha" name="captcha" type="text" placeholder="Captcha" required="" autocomplete="new-password">
+                    <input type="button" id="captchasubmit" value="获取验证码">
+                    <div class="clear"></div>
+                </div>
+                <div class="btnn">
+                    <button type="submit">注册</button><br>
+                    <div class="clear"></div>
+                </div>
+                <div class="rem-pass-agile">
+                    <div class="left-side">
+                        <span id="info" class="span" style="color: red; margin: 0"></span>
+                    </div>                
+                    <div class="right-side">
+                        <a href="/login" class="for">已有账户?登录...</a>
+                    </div>
+                    <div class="clear"></div>
+                </div>
             </form>
-        </fieldset>
-    </div>
-
-</body>
-
-<script type="text/javascript">
-    console.log('{{result}}')
-    /*if('{{result}}'==None)
-        var result = 4*/
-    //else{
-        var result = '{{ result|tojson }}';
-
-         if(result==0)
-             document.getElementById("usernametext").innerHTML="用户名已被注册"
-        else if(result==1)
-            document.getElementById("repeatpasswdtext").innerHTML="密码不一致"
-        else if(result==2)
-            document.getElementById("emailtext").innerHTML="邮箱格式错误"
-        else if(result==3)
-            document.getElementById("emailtext").innerHTML="该邮箱已被注册"
-
-
-</script>
-
+        </div>
+    </body>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery.form/4.2.2/jquery.form.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#regform").ajaxForm(function(data){
+                var obj = JSON.parse(data);
+                var info = "";
+                if(obj.result == "0"){
+                    info = "用户名已被注册";
+                    $("#name").focus();
+                }
+                else if(obj.result == "1"){
+                    info = "两次输入密码不一致";
+                    $("#repeat").focus();
+                }
+                else if(obj.result == "2"){
+                    info = "邮箱格式错误";
+                    $("#email").focus();
+                }
+                else if(obj.result == "3"){
+                    info = "邮箱已被注册";
+                    $("#email").focus();
+                }
+                else if(obj.result == "4"){
+                    info = "验证码已超时，请重新获取";
+                    $("#captcha").focus();
+                }
+                else if(obj.result == "5"){
+                    info = "验证码错误";
+                    $("#captcha").focus();
+                }
+                else if(obj.result == "-1"){
+                    info = "数据库错误，无法自动跳转，请尝试手动登录";
+                }
+                else{
+                    window.location = "/";
+                }
+                $("#info").text(info);
+            });
+        });
+    </script>
+    <script type="text/javascript"> 
+        var countdown=60; 
+        function settime(val) { 
+            if (countdown == 0) { 
+                val.removeAttribute("disabled");  
+                val.value="获取验证码";
+                countdown=60;
+                return;
+            } else { 
+                val.setAttribute("disabled", true); 
+                val.value="重新发送(" + countdown + ")"; 
+                countdown--; 
+            } 
+            setTimeout(function() { 
+                settime(val) 
+            },1000) 
+        }
+        $("#captchasubmit").on("click", function(){
+            var patt = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
+            if(!patt.test($("#email").val())){
+                $("#info").text("邮箱格式错误");
+                return;
+            }
+            $("#info").text("");
+            $.post("/api/sendmail", {email: $("#email").val()})
+            settime(this);
+        })
+    </script>
 </html>

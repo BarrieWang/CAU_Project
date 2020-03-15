@@ -6,6 +6,7 @@
     "host": {
       "type": "string",
       "default": "47.93.56.66",
+      "not_default": "182.92.107.78",
       "description": "数据库服务器地址"
     },
     "port": {
@@ -61,13 +62,20 @@
   "recommend": {
     "recom_num": {
       "type": "int",
-      "default": 20,
+      "default": 5,
       "description": "需要推荐的问题数"
     },
     "recent_num": {
       "type": "int",
       "default": 50,
       "description": "被认为是近期的问题数量"
+    }
+  },
+  "mail": {
+    "life_time": {
+      "type": "int",
+      "default": 10,
+      "description": "验证码缓存有效时间（分钟）"
     }
   }
 }
