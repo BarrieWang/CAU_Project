@@ -1,3 +1,8 @@
+"""
+author: 李润超
+create time: 2020-03-4
+update time: 2020-03-8
+"""
 from util.util_mysql import *
 from werkzeug.security import generate_password_hash, check_password_hash
 import re

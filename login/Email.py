@@ -1,3 +1,8 @@
+"""
+author: 李润超
+create time: 2020-03-10
+update time: 2020-03-12
+"""
 from flask_mail import Mail, Message
 
 import random
