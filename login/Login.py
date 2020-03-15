@@ -1,11 +1,8 @@
-"""
-author: 李润超
-create time: 2020-03-4
-update time: 2020-03-8
-"""
 from util.util_mysql import *
+from util.util_mysql import Users, UserCounts
 from werkzeug.security import generate_password_hash, check_password_hash
 import re
+from uuid import uuid4
 
 
 def checkuser(username, password, db):
@@ -17,7 +14,8 @@ def checkuser(username, password, db):
     """
     ret = db.select(Users, Users.name == username)
     # ret=db.select_mysql(sql="select * from user where name = '"+username+"'")
-    if ret is False:
+
+    if not ret:
         return 0
     elif check_password_hash(ret[0].passwd, password) is False:
         return 1
@@ -25,44 +23,40 @@ def checkuser(username, password, db):
         return ret[0]
 
 
-def checkregister(username, password, repeatpasswd, useremail, db):
+def checkregister(username, password, repeatpasswd, useremail, captcha, db, cache):
     """
     :param username: 用户名
     :param password: 密码
     :param repeatpasswd: 重复密码
     :param useremail: 邮箱
+    :param captcha: 验证码
     :param db: 数据库连接对象
-    :return: 0：用户名已被注册 1：密码不一致 2：邮箱格式有误 3：邮箱已被注册 用户id：注册成功
+    :param cache: 缓存对象
+    :return: 0：用户名已被注册 1：密码不一致 2：邮箱格式有误 3：邮箱已被注册 4：验证码已超时 5：验证码错误 用户id：注册成功
     """
-    currenttable = db.select(Users)
-    emaillist = []
-    namelist = []
-    for item in currenttable:
-        emaillist.append(item.email)
-        namelist.append(item.name)
-    # print(emaillist)
+    emaillist = db.select(Users.email)
+    namelist = db.select(Users.name)
+    emaillist = [item[0] for item in emaillist]
+    namelist = [item[0] for item in namelist]
     if username in namelist:
         return 0
     if password != repeatpasswd:
         return 1
-    elif re.match(r'^[0-9a-zA-Z_]{0,19}@[0-9a-zA-Z]{1,13}\.[com,cn,net]{1,3}$', useremail) is None:
+    if re.match(r'^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$', useremail) is None:
         return 2
-    elif useremail in emaillist:
+    if useremail in emaillist:
         return 3
-    else:
-
-        idlist = []
-
-        for item in currenttable:
-            idlist.append(int(item.uid))
-        # print(idlist)
-        userid = str(max(idlist)+1)
-        hashpasswd = generate_password_hash(password)
-        print(len(hashpasswd), hashpasswd)
-        userobj = Users(uid=userid, name=username, passwd=hashpasswd, email=useremail, authorization='0')
-        db.insert(userobj)
-
-        return userid
+    if cache.get(useremail) is None:
+        return 4
+    if cache.get(useremail) != captcha:
+        return 5
+    userid = "U"+str(uuid4().hex)
+    hashpasswd = generate_password_hash(password)
+    userobj = Users(uid=userid, name=username, passwd=hashpasswd, email=useremail)
+    usercount = UserCounts(uid=userid)
+    db.insert(userobj)
+    db.insert(usercount)
+    return userid
 
 
 def storeinterest(interest, userid, db):

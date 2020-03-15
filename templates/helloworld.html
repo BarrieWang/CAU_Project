@@ -16,13 +16,13 @@
 </body>
 <script type="text/javascript">
     $('#loadlink').on("click", function(event){
-        $.getJSON("jsonrequest", function(data){
+        $.getJSON("api/jsonrequest", function(data){
             var word = data["result"]
             $('#loadcontent').append(word+"<br>")
         })
     })
     $('#submit').on("click", function(event){
-        $.post("submit", {t1:"1", t2:"2", t3:"3"}, function(data){
+        $.post("api/submit", {t1:"1", t2:"2", t3:"3"}, function(data){
             console.log(data);
         })
     })

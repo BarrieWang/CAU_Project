@@ -1,0 +1,545 @@
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, dl, dt, dd, ol, nav ul, nav li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline
+}
+
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+    display: block
+}
+
+ol, ul {
+    list-style: none;
+    margin: 0;
+    padding: 0
+}
+
+blockquote, q {
+    quotes: none
+}
+
+blockquote:before, blockquote:after, q:before, q:after {
+    content: '';
+    content: none
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0
+}
+
+a {
+    text-decoration: none
+}
+
+.txt-rt {
+    text-align: right
+}
+
+.txt-lt {
+    text-align: left
+}
+
+.txt-center {
+    text-align: center
+}
+
+.float-rt {
+    float: right
+}
+
+.float-lt {
+    float: left
+}
+
+.clear {
+    clear: both
+}
+
+.pos-relative {
+    position: relative
+}
+
+.pos-absolute {
+    position: absolute
+}
+
+.vertical-base {
+    vertical-align: baseline
+}
+
+.vertical-top {
+    vertical-align: top
+}
+
+nav.vertical ul li {
+    display: block
+}
+
+nav.horizontal ul li {
+    display: inline-block
+}
+
+img {
+    max-width: 100%
+}
+
+html, body {
+    padding: 0;
+    margin: 0;
+    background: rgb(255, 255, 255);
+    font-family: montserrat, sans-serif
+}
+
+body a {
+    font-family: montserrat, sans-serif;
+    transition: .5s all;
+    -webkit-transition: .5s all;
+    -moz-transition: .5s all;
+    -o-transition: .5s all;
+    -ms-transition: .5s all;
+    text-decoration: none
+}
+
+body a:hover {
+    text-decoration: none
+}
+
+body a:focus, a:hover {
+    text-decoration: none
+}
+
+select, input[type=email], input[type=text], input[type=password], input[type=button], input[type=submit], textarea {
+    font-family: montserrat, sans-serif;
+    transition: .5s all;
+    -webkit-transition: .5s all;
+    -moz-transition: .5s all;
+    -o-transition: .5s all;
+    -ms-transition: .5s all
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    padding: 0;
+    font-family: montserrat, sans-serif;
+    letter-spacing: 1px
+}
+
+p {
+    margin: 0;
+    padding: 0;
+    letter-spacing: 1px;
+    font-family: montserrat, sans-serif
+}
+
+ul {
+    margin: 0;
+    padding: 0
+}
+
+body {
+    background: rgb(39, 38, 54);
+    min-height: 100vh
+}
+
+.placeholder {
+    padding: 46px 0 0;
+    margin-bottom: 81px;
+}
+
+.left-side a, .btnn, .line-mid {
+    text-align: center
+}
+
+.its-sign-in h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 1em 0 1em;
+    color: rgb(39, 38, 54);
+    text-align: center
+}
+
+.main {
+    padding: 3em;
+    padding-bottom: 4em;
+    width: 22%;
+    margin: 0 auto;
+    background: white;
+    -webkit-box-shadow: 3px 17px 43px 6px rgba(255, 255, 255, .75);
+    -moz-box-shadow: 3px 17px 43px 6px rgba(255, 255, 255, .75);
+    box-shadow: 3px 17px 43px 6px rgba(255, 255, 255, .75)
+}
+
+.form-left-w3l input[type=password], .form-left-w3l input[type=text], .form-left-w3l input[type=email] {
+    width: 100%;
+    color: rgb(39, 38, 54);
+    outline: none;
+    font-size: 14px;
+    padding: .8em 0;
+    margin: 10px 0 9px;
+    border: none;
+    border-bottom: 1px solid rgb(39, 38, 54);
+    -webkit-appearance: none;
+    display: inline-block;
+    background: 0 0;
+    box-sizing: border-box
+}
+
+::-webkit-input-placeholder {
+    color: rgb(39, 38, 54)
+}
+
+::-moz-placeholder {
+    color: rgb(39, 38, 54)
+}
+
+:-ms-input-placeholder {
+    color: rgb(39, 38, 54)
+}
+
+:-moz-placeholder {
+    color: rgb(39, 38, 54)
+}
+
+button {
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+button[type=submit] {
+    width: 100%;
+    background: rgb(39, 38, 54);
+    outline: none;
+    color: white;
+    font-size: 15px;
+    font-weight: 400;
+    border: none;
+    padding: 16px 0;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: .5s all;
+    -webkit-transition: .5s all;
+    -o-transition: .5s all;
+    -moz-transition: .5s all;
+    -ms-transition: .5s all
+}
+
+button[type=button], #captchasubmit {
+    width: 100%;
+    background: rgb(39, 38, 54);
+    outline: none;
+    color: white;
+    font-size: 15px;
+    font-weight: 400;
+    border: none;
+    padding: 16px 0;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: .5s all;
+    -webkit-transition: .5s all;
+    -o-transition: .5s all;
+    -moz-transition: .5s all;
+    -ms-transition: .5s all
+}
+
+#captcha {
+    width: 70%;
+    float: left;
+}
+
+#captchasubmit {
+    float: right;
+    width: 28%;
+    font-size: 14px;
+    padding: 11px 0;
+    margin: 10px 0 9px;
+}
+
+#captchasubmit:disabled {
+    color: white;
+    background: rgb(76, 75, 88)
+}
+
+button:hover, #captchasubmit:hover {
+    color: white;
+    background: rgb(76, 75, 88)
+}
+
+.line-mid h4 {
+    font-size: 15px;
+    color: rgb(39, 38, 54);
+    display: inline-block;
+    border: 1px solid;
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    border-radius: 51px;
+    margin: 22px 0
+}
+
+.rem-pass-agile {
+    display: -webkit-flex;
+    display: -webkit-box;
+    display: -moz-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -moz-box-pack: justify;
+    -ms-flex-pack: justify;
+    -webkit-justify-content: space-between;
+    justify-content: space-between
+}
+
+.icons {
+    display: -webkit-flex;
+    display: -webkit-box;
+    display: -moz-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    margin-bottom: 17px
+}
+
+.left-side, .right-side, .follow-one, .follow-two {
+    flex: 1
+}
+
+.right-side a, .left-side a {
+    font-size: 14px;
+    color: rgb(107, 105, 128);
+    font-weight: 600;
+    letter-spacing: 1px;
+    display: block;
+    transition: .5s all;
+    -webkit-transition: .5s all;
+    -o-transition: .5s all;
+    -moz-transition: .5s all;
+    -ms-transition: .5s all
+}
+
+.right-side a:hover, .left-side a:hover {
+    color: rgb(39, 38, 54)
+}
+
+.left-side {
+    position: relative
+}
+
+.right-side {
+    text-align: right;
+}
+
+input.checked {
+    display: inline-block;
+    position: absolute;
+    top: 4px;
+    width: 14%;
+    left: -8px;
+    margin: 0;
+    cursor: pointer
+}
+
+.span {
+    color: rgb(39, 38, 54);
+    font-size: 14px;
+    margin-left: 19px;
+    font-weight: 600
+}
+
+@media(max-width:1920px) {
+    .rem-pass-agile {
+        margin: 29px 0 32px
+    }
+}
+
+@media(max-width:1600px) {
+    .rem-pass-agile {
+        margin: 22px 0
+    }
+}
+
+@media(max-width:1440px) {
+    .main {
+        width: 27%
+    }
+}
+
+@media(max-width:1366px) {
+    .main {
+        width: 29%
+    }
+    .its-sign-in h2 {
+        margin: .8em 0 .8em
+    }
+}
+
+@media(max-width:1280px) {
+    .its-sign-in h2 {
+        font-size: 23px
+    }
+    button[type=submit] {
+        padding: 15px 0
+    }
+}
+
+@media(max-width:1080px) {
+    .main {
+        width: 35%
+    }
+}
+
+@media(max-width:1050px) {
+    .main {
+        width: 36%
+    }
+    .line-mid h4 {
+        width: 34px;
+        height: 34px;
+        line-height: 34px
+    }
+}
+
+@media(max-width:1024px) {
+    .form-left-w3l input[type=password], .form-left-w3l input[type=email] {
+        padding: .7em 0;
+        margin: 8px 0 7px
+    }
+}
+
+@media(max-width:991px) {
+    .main {
+        width: 38%
+    }
+    .span {
+        margin-left: 17px
+    }
+}
+
+@media(max-width:900px) {
+    .main {
+        width: 40%
+    }
+}
+
+@media(max-width:800px) {
+    .main {
+        width: 47%
+    }
+    .its-sign-in h2 {
+        font-size: 22px
+    }
+}
+
+@media(max-width:768px) {
+    .main {
+        width: 48%;
+        padding: 2.5em;
+        padding-bottom: 3em;
+    }
+    button[type=submit] {
+        padding: 13px 0
+    }
+}
+
+@media(max-width:767px) {
+    .main {
+        width: 50%
+    }
+}
+
+@media(max-width:736px) {
+    .its-sign-in h2 {
+        margin: .8em 0 .8em
+    }
+}
+
+@media(max-width:667px) {
+    .main {
+        width: 56%
+    }
+}
+
+@media(max-width:640px) {
+    .its-sign-in h2 {
+        font-size: 20px
+    }
+    .main {
+        width: 58%
+    }
+}
+
+@media(max-width:600px) {
+    .main {
+        padding: 2.1em;
+        padding-bottom: 3em;
+        width: 62%
+    }
+    .rem-pass-agile {
+        margin: 19px 0
+    }
+}
+
+@media(max-width:568px) {
+    .main {
+        width: 65%
+    }
+}
+
+@media(max-width:480px) {
+    .main {
+        width: 70%
+    }
+}
+
+@media(max-width:440px) {
+    .rem-pass-agile {
+        flex-direction: column;
+        text-align: center
+    }
+    .right-side a {
+        padding-top: 15px
+    }
+    input.checked {
+        left: 61px
+    }
+    .icons {
+        margin-bottom: 16px
+    }
+}
+
+@media(max-width:414px) {
+    .icons {
+        flex-direction: column
+    }
+    .line-mid h4 {
+        margin: 19px 0
+    }
+    input.checked {
+        left: 51px
+    }
+}
+
+@media(max-width:384px) {
+    input.checked {
+        left: 41px
+    }
+    button[type=submit] {
+        font-size: 14px
+    }
+}
+
+@media(max-width:320px) {
+    .main {
+        padding: 1.8em;
+        padding-bottom: 3em;
+    }
+    input.checked {
+        left: 22px
+    }
+}
